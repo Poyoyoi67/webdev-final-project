@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}About Us{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --dark-navy: #03033f;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --shadow-medium: 0 4px 20px rgba(0, 0, 128, 0.15);
+        }
+
+        body {
+            background: url('{{ asset("images/Background.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .overlay {
+            background: rgba(255, 255, 255, 0.5);
+            min-height: 100vh;
+            padding: 3rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .about-container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.75);
+            border-radius: 16px;
+            box-shadow: var(--shadow-medium);
+            padding: 2.5rem 3rem;
+            line-height: 1.7;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .about-container h1 {
+            text-align: center;
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: var(--primary-blue);
+            margin-bottom: 1.8rem;
+        }
+
+        .about-container p {
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .about-container .highlight {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .mission-vision-section {
+            margin-top: 2.5rem;
+            text-align: center;
+        }
+
+        .mission-vision-section h2 {
+            color: var(--primary-blue);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .mission-vision-section p {
+            color: var(--text-dark);
+            font-size: 1.05rem;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-medium);
+            line-height: 1.8;
+            max-width: 750px;
+            margin: 0.8rem auto 2rem;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .divider {
+            height: 2px;
+            width: 80px;
+            background: var(--accent-turquoise);
+            margin: 1rem auto 2rem;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .about-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+
+    <div class="overlay">
+        <div class="about-container">
+            <h1>About Our Health Care System</h1>
+
+            <p>
+                Welcome to <span class="highlight">Health Care System</span> — a platform dedicated to improving access to
+                quality healthcare services. We aim to make appointment scheduling, service management, and
+                patient communication easier and more efficient for both patients and medical staff.
+            </p>
+
+            <p>
+                Our mission is to create a seamless healthcare experience by integrating technology with compassion.
+                Through this system, we strive to support clinics and health professionals in delivering care that’s
+                organized, timely, and effective.
+            </p>
+
+            <div class="mission-vision-section">
+                <h2>Our Mission</h2>
+                <div class="divider"></div>
+                <p>
+                    To offer patient-centered, compassionate, and easily accessible primary care that encourages wellness,
+                    prevention, and lifetime health, enabling people and families to have happier, healthier lives.
+                </p>
+
+                <h2>Our Vision</h2>
+                <div class="divider"></div>
+                <p>
+                    A community where every person has access to quality primary care, preventive services, and holistic
+                    support, fostering a healthier and more resilient society.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

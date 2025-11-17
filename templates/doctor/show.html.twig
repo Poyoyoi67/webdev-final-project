@@ -1,0 +1,184 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Doctor Details{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --danger-red: #dc3545;
+            --danger-red-dark: #a71d2a;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --shadow-medium: 0 4px 20px rgba(0, 0, 128, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            margin: 2rem 0;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .details-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .details-table th {
+            text-align: left;
+            padding: 0.8rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            background: var(--light-bg);
+            border-bottom: 2px solid #ddd;
+            width: 30%;
+        }
+
+        .details-table td {
+            padding: 0.8rem;
+            color: var(--text-dark);
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.7rem 1.4rem;
+            border-radius: 25px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 120px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: var(--white);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            background: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-turquoise);
+            color: var(--white);
+            border-color: var(--accent-turquoise);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-red), var(--danger-red-dark));
+            color: var(--white);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+    </style>
+
+    <h1>Doctor Details</h1>
+
+    <div class="details-card">
+        <table class="details-table">
+            <tbody>
+                <tr>
+                    <th>ID</th>
+                    <td>{{ doctor.id }}</td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ doctor.name }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ doctor.email }}</td>
+                </tr>
+                <tr>
+                    <th>Specialization</th>
+                     <td>{{ doctor.specialization }}</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        {{ doctor.description is defined ? doctor.description : 'No description available.' }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="page-actions">
+            <a href="{{ path('app_doctor_index') }}" class="btn btn-secondary">⬅ Back to list</a>
+            <a href="{{ path('app_doctor_edit', {'id': doctor.id}) }}" class="btn btn-primary">✏ Edit</a>
+
+            <form id="deleteForm" method="post"
+                  action="{{ path('app_doctor_delete', {'id': doctor.id}) }}"
+                  style="display:inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ doctor.id) }}">
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">🗑 Delete</button>
+            </form>
+        </div>
+    </div>
+
+    {# SweetAlert2 library #}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmDelete() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This doctor record will be permanently deleted.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                background: '#ffffff',
+                customClass: {
+                    title: 'text-lg font-bold text-[#000080]',
+                    popup: 'rounded-xl shadow-lg',
+                    confirmButton: 'px-4 py-2 rounded-full',
+                    cancelButton: 'px-4 py-2 rounded-full'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            })
+        }
+    </script>
+{% endblock %}

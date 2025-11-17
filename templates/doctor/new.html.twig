@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add New Doctor{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --dark-navy: #03033f;
+            --light-gray: #f8f9fa;
+            --medium-gray: #6c757d;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --shadow-light: 0 2px 10px rgba(0, 0, 128, 0.1);
+            --shadow-medium: 0 4px 20px rgba(0, 0, 128, 0.15);
+            --shadow-strong: 0 8px 30px rgba(3, 3, 63, 0.2);
+        }
+
+        body {
+            background-color: var(--light-gray);
+        }
+
+        h1.page-title {
+            text-align: center;
+            margin: 2rem 0;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .doctor-form-container {
+            width: 80%;
+            max-width: 700px;
+            margin: 2rem auto;
+            background: var(--white);
+            box-shadow: var(--shadow-medium);
+            border-radius: 12px;
+            padding: 2rem 2.5rem;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: var(--white);
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-navy));
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: 0.3s;
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, var(--accent-turquoise), var(--primary-blue));
+            color: var(--dark-navy);
+            transform: translateY(-2px);
+        }
+
+        .form-card {
+            background-color: var(--light-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        /* Form field styles */
+        form label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        form input,
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        form input:focus,
+        form select:focus,
+        form textarea:focus {
+            border-color: var(--accent-turquoise);
+            box-shadow: 0 0 6px rgba(64, 224, 208, 0.4);
+        }
+
+        /* Submit button */
+        form button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-turquoise), #20c997);
+            color: var(--dark-navy);
+            padding: 0.9rem 1.6rem;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            box-shadow: var(--shadow-light);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-strong);
+        }
+    </style>
+
+    <h1 class="page-title">Add New Doctor</h1>
+
+    <div class="doctor-form-container">
+        <div class="form-header">
+            <h2>Doctor Information</h2>
+            <a href="{{ path('app_doctor_index') }}" class="btn-back">← Back to List</a>
+        </div>
+
+        <div class="form-card">
+            {{ include('doctor/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

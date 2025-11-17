@@ -1,0 +1,240 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Appointment List{% endblock %}
+
+{% block body %}
+    <!-- ✅ DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.min.css">
+
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --dark-navy: #03033f;
+            --light-gray: #f8f9fa;
+            --medium-gray: #6c757d;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --shadow-light: 0 2px 10px rgba(0, 0, 128, 0.1);
+            --shadow-medium: 0 4px 20px rgba(0, 0, 128, 0.15);
+            --shadow-strong: 0 8px 30px rgba(3, 3, 63, 0.2);
+        }
+
+        h1.page-title {
+            text-align: center;
+            margin: 2rem 0;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .no-records {
+            text-align: center;
+            color: var(--medium-gray);
+            font-size: 1.2rem;
+            margin: 2rem 0;
+        }
+
+        /* --- TABLE STYLES --- */
+        table.appointment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem auto;
+            background: var(--white);
+            box-shadow: var(--shadow-medium);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .appointment-table thead th {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-navy));
+            color: var(--white);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .appointment-table tbody td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid var(--light-gray);
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .appointment-table tbody tr:hover td {
+            background: rgba(64, 224, 208, 0.08);
+        }
+
+        .appointment-table a {
+            text-decoration: none;
+            font-weight: 500;
+            color: var(--primary-blue);
+            transition: 0.3s;
+        }
+
+        .appointment-table a:hover {
+            color: var(--accent-turquoise);
+        }
+
+        .create-btn {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .create-btn a {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-turquoise), #20c997);
+            color: var(--dark-navy);
+            padding: 0.9rem 1.6rem;
+            border-radius: 25px;
+            font-weight: 500;
+            text-decoration: none;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .create-btn a:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        /* --- DATATABLE CUSTOMIZATION --- */
+        div.dataTables_wrapper {
+            width: 90%;
+            margin: 0 auto 3rem;
+        }
+
+        .dataTables_filter {
+            float: right;
+            margin-bottom: 1rem;
+        }
+
+        .dataTables_filter label {
+            font-weight: 500;
+            color: var(--primary-blue);
+        }
+
+        .dataTables_filter input {
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            padding: 0.4rem 0.6rem;
+            margin-left: 0.4rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .dataTables_filter input:focus {
+            border-color: var(--accent-turquoise);
+            box-shadow: 0 0 5px rgba(64, 224, 208, 0.4);
+        }
+
+        .dataTables_length label {
+            font-weight: 500;
+            color: var(--primary-blue);
+        }
+
+        .dataTables_length select {
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            padding: 0.3rem 0.5rem;
+            margin: 0 0.3rem;
+            outline: none;
+        }
+
+        .dataTables_info {
+            color: var(--medium-gray);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .dataTables_paginate {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .dataTables_paginate a {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            margin: 0 0.2rem;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            color: var(--primary-blue);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dataTables_paginate a:hover {
+            background: var(--accent-turquoise);
+            color: var(--dark-navy);
+        }
+
+        .dataTables_paginate .current {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: var(--white) !important;
+            border: none;
+        }
+    </style>
+
+    <h1 class="page-title">Appointment Records</h1>
+
+    {% if appointments is empty %}
+        <p class="no-records">🚫 No appointments found.</p>
+    {% else %}
+        <table id="appointmentTable" class="appointment-table display">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient Name</th>
+                    <th>Appointment Date</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.id }}</td>
+                    <td>{{ appointment.patientName }}</td>
+                    <td>{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d H:i') : '' }}</td>
+                    <td>{{ appointment.status }}</td>
+                    <td>{{ appointment.notes }}</td>
+                    <td>
+                        <a href="{{ path('app_appointment_show', {'id': appointment.id}) }}">View</a> |
+                        <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <div class="create-btn">
+        <a href="{{ path('app_appointment_new') }}">➕ Add New Appointment</a>
+    </div>
+
+    <!-- ✅ jQuery + DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            $('#appointmentTable').DataTable({
+                pageLength: 5,
+                lengthMenu: [5, 10, 20, 50],
+                language: {
+                    search: "🔍 Search:",
+                    lengthMenu: "Show _MENU_ appointments per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ appointments",
+                    paginate: {
+                        next: "→",
+                        previous: "←"
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

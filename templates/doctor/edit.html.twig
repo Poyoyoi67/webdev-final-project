@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Doctor{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --danger-red: #dc3545;
+            --danger-red-dark: #a71d2a;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --shadow-medium: 0 4px 20px rgba(0, 0, 128, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            margin: 2rem 0;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .form-container label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--primary-blue);
+        }
+
+        .form-container input,
+        .form-container textarea,
+        .form-container select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 1.2rem;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-container input:focus,
+        .form-container textarea:focus,
+        .form-container select:focus {
+            outline: none;
+            border: 1px solid var(--accent-turquoise);
+            box-shadow: 0 0 6px rgba(64, 224, 208, 0.4);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.7rem 1.4rem;
+            border-radius: 25px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 120px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: var(--white);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            background: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-turquoise);
+            color: var(--white);
+            border-color: var(--accent-turquoise);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-red), var(--danger-red-dark));
+            color: var(--white);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+    </style>
+
+    <h1>Edit Doctor</h1>
+
+    <div class="form-container">
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.specialization) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.contactNumber) }}
+            {{ form_row(form.description) }}
+
+            <div class="form-actions">
+                <button class="btn btn-primary">💾 Update</button>
+                <a href="{{ path('app_doctor_index') }}" class="btn btn-secondary">⬅ Back to list</a>
+            </div>
+        {{ form_end(form) }}
+
+        <div class="form-actions">
+            <form id="deleteForm" method="post"
+                  action="{{ path('app_doctor_delete', {'id': doctor.id}) }}"
+                  style="display:inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ doctor.id) }}">
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">🗑 Delete</button>
+            </form>
+        </div>
+    </div>
+
+    {# SweetAlert2 library #}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmDelete() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This doctor will be permanently deleted.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                background: '#ffffff',
+                customClass: {
+                    title: 'text-lg font-bold text-[#000080]',
+                    popup: 'rounded-xl shadow-lg',
+                    confirmButton: 'px-4 py-2 rounded-full',
+                    cancelButton: 'px-4 py-2 rounded-full'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            })
+        }
+    </script>
+{% endblock %}
