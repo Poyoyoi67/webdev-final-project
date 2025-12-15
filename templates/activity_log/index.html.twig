@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activity Log{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --light-gray: #f8f9fa;
+            --text-dark: #2c3e50;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        table.log-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .log-table thead th {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: white;
+            padding: 0.8rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .log-table tbody td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--light-gray);
+            color: var(--text-dark);
+            font-size: 0.85rem;
+        }
+
+        .log-table tbody td:last-child {
+            max-width: 300px;
+            word-wrap: break-word;
+            font-size: 0.8rem;
+        }
+
+        .log-table tbody tr:hover td {
+            background: rgba(64, 224, 208, 0.08);
+        }
+
+        .empty {
+            text-align: center;
+            color: #6b7280;
+            margin-top: 1rem;
+        }
+    </style>
+
+    <h1>Activity Log</h1>
+
+    {% if logs is empty %}
+        <p class="empty">No activity recorded yet.</p>
+    {% else %}
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Timestamp</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                    <th>Target Data</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td>{{ log.id }}</td>
+                    <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
+                    <td>{{ log.username ?? 'Anonymous' }}</td>
+                    <td>{{ log.role ?? 'N/A' }}</td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.details ?? 'N/A' }}</td>
+                    <td>{{ log.targetData ?? 'N/A' }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
+
+

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --bg: #f2f5fb;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .card {
+            background: #fff;
+            width: 440px;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+        }
+        h1 {
+            margin: 0 0 6px 0;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-align: center;
+        }
+        p.subtitle {
+            margin: 0 0 18px 0;
+            text-align: center;
+            color: #6b7280;
+        }
+        .form-row { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; color: #374151; font-weight: 600; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            font-size: 15px;
+        }
+        input:focus { outline: 2px solid var(--accent-turquoise); border-color: transparent; }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            margin-top: 4px;
+        }
+        button:hover { opacity: 0.9; }
+        .login-link { text-align: center; margin-top: 12px; }
+        .login-link a { color: var(--primary-blue); text-decoration: none; font-weight: 600; }
+        .errors { margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Create your account</h1>
+    <p class="subtitle">Staff can register directly; admins can add roles later.</p>
+
+    <div class="errors">
+    {{ form_errors(registrationForm) }}
+    </div>
+
+    {{ form_start(registrationForm) }}
+        <div class="form-row">
+            {{ form_label(registrationForm.username, 'Username') }}
+            {{ form_widget(registrationForm.username) }}
+            {{ form_errors(registrationForm.username) }}
+        </div>
+        <div class="form-row">
+            {{ form_label(registrationForm.plainPassword, 'Password') }}
+            {{ form_widget(registrationForm.plainPassword) }}
+            {{ form_errors(registrationForm.plainPassword) }}
+        </div>
+        <div class="form-row">
+        {{ form_row(registrationForm.agreeTerms) }}
+        </div>
+        <button type="submit">Register</button>
+    {{ form_end(registrationForm) }}
+
+    <div class="login-link">
+        Already have an account?
+        <a href="{{ path('app_login') }}">Log in</a>
+    </div>
+</div>
+</body>
+</html>

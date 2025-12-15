@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AppointmentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\AppointmentPayment;
 
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
 class Appointment
@@ -30,6 +31,9 @@ class Appointment
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $notes = null;
+
+    #[ORM\OneToOne(mappedBy: 'appointment', cascade: ['remove'])]
+    private ?AppointmentPayment $payment = null;
 
     public function getId(): ?int
     {
@@ -105,6 +109,17 @@ class Appointment
     {
         $this->notes = $notes;
 
+        return $this;
+    }
+
+    public function getPayment(): ?AppointmentPayment
+    {
+        return $this->payment;
+    }
+
+    public function setPayment(?AppointmentPayment $payment): static
+    {
+        $this->payment = $payment;
         return $this;
     }
 }

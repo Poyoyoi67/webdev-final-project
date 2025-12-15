@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-blue);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="checkbox"] {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.7rem 1.4rem;
+            border-radius: 25px;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: var(--primary-blue);
+        }
+    </style>
+
+    <h1>Edit User</h1>
+
+    <div class="form-card">
+        <form method="post">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Roles</label>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" name="roles[]" value="ROLE_USER" {% if 'ROLE_USER' in user.roles %}checked{% endif %}>
+                        ROLE_USER
+                    </label>
+                    <label>
+                        <input type="checkbox" name="roles[]" value="ROLE_STAFF" {% if 'ROLE_STAFF' in user.roles %}checked{% endif %}>
+                        ROLE_STAFF
+                    </label>
+                    <label>
+                        <input type="checkbox" name="roles[]" value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in user.roles %}checked{% endif %}>
+                        ROLE_ADMIN
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-primary">Update User</button>
+                <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+

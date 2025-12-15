@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Clinic Location{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .location-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
+        }
+
+        .map-wrapper {
+            width: 100%;
+            height: 600px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .location-info {
+            background: linear-gradient(135deg, rgba(0, 0, 128, 0.05), rgba(64, 224, 208, 0.05));
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .location-info h3 {
+            color: var(--primary-blue);
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .location-info p {
+            color: #2c3e50;
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .location-info .icon {
+            display: inline-block;
+            margin-right: 0.5rem;
+            color: var(--accent-turquoise);
+        }
+    </style>
+
+    <h1>Clinic Location</h1>
+
+    <div class="location-container">
+        <div class="map-wrapper">
+            <div id="map"></div>
+        </div>
+
+        <div class="location-info">
+            <h3>
+                <span class="icon">📍</span>
+                {{ clinicLocation.name }}
+            </h3>
+            <p>
+                <span class="icon">🏥</span>
+                {{ clinicLocation.address }}
+            </p>
+            <p>
+                <span class="icon">📞</span>
+                Contact us for directions
+            </p>
+        </div>
+    </div>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map centered on clinic location
+            const map = L.map('map').setView([{{ clinicLocation.latitude }}, {{ clinicLocation.longitude }}], 15);
+
+            // Add OpenStreetMap tiles (free)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Add marker for clinic location
+            const clinicMarker = L.marker([{{ clinicLocation.latitude }}, {{ clinicLocation.longitude }}])
+                .addTo(map)
+                .bindPopup(`
+                    <div style="text-align: center;">
+                        <strong style="color: #000080; font-size: 1.1em;">{{ clinicLocation.name }}</strong><br>
+                        <span style="color: #2c3e50;">{{ clinicLocation.address }}</span>
+                    </div>
+                `)
+                .openPopup();
+
+            // Add custom icon (optional - using default marker)
+            // You can customize the marker icon if needed
+        });
+    </script>
+{% endblock %}
+

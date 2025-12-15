@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --dark-navy: #03033f;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --text-dark: #2c3e50;
+        }
+
+        .reports-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .reports-header h1 {
+            margin: 0;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .card h3 {
+            margin: 0 0 0.4rem 0;
+            color: var(--primary-blue);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .card .count {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--dark-navy);
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            color: #4b5563;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+
+    <div class="reports-header">
+        <h1>Appointment Reports</h1>
+        <p>Quick overview of appointments by status.</p>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Total Appointments</h3>
+            <div class="count">{{ totalAppointments }}</div>
+        </div>
+
+        {% for status in trackedStatuses %}
+            <div class="card">
+                <h3>{{ status|capitalize }}</h3>
+                <div class="count">{{ statusCounts[status]|default(0) }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="legend">
+        <span><span class="dot" style="background: var(--primary-blue)"></span>Scheduled</span>
+        <span><span class="dot" style="background: var(--accent-turquoise)"></span>Finished/Completed</span>
+        <span><span class="dot" style="background: #f59e0b"></span>Pending</span>
+        <span><span class="dot" style="background: #dc2626"></span>Cancelled</span>
+    </div>
+{% endblock %}
+

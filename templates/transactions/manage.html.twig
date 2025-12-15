@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Payment{% endblock %}
+
+{% block body %}
+    <style>
+        .card {
+            max-width: 520px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(3,3,63,0.12);
+        }
+        h1 { text-align: center; margin-bottom: 1rem; }
+        .meta { margin-bottom: 1rem; color: #4b5563; }
+        button { margin-top: 1rem; }
+    </style>
+
+    <div class="card">
+        <h1>Payment for Appointment #{{ appointment.id }}</h1>
+        <div class="meta">
+            <div><strong>Patient:</strong> {{ appointment.patientName }}</div>
+            <div><strong>Scheduled:</strong> {{ appointment.appointmentDate|date('Y-m-d H:i') }}</div>
+        </div>
+
+        {{ form_start(form) }}
+            {{ form_row(form.amount) }}
+            {{ form_row(form.changeAmount) }}
+            {{ form_row(form.paymentMethod) }}
+            <button type="submit">Save Payment</button>
+        {{ form_end(form) }}
+
+        <p style="margin-top:1rem;">
+            <a href="{{ path('app_transactions_index') }}">Back to transactions</a>
+        </p>
+    </div>
+{% endblock %}
+
+

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --bg: #f2f5fb;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .card {
+            background: #fff;
+            width: 420px;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+        }
+        h2 {
+            margin: 0 0 8px 0;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        p.subtitle {
+            margin: 0 0 20px 0;
+            color: #6b7280;
+        }
+        label { display: block; margin-bottom: 6px; color: #374151; font-weight: 600; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            font-size: 15px;
+        }
+        input:focus { outline: 2px solid var(--accent-turquoise); border-color: transparent; }
+        .form-group { margin-bottom: 16px; }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        button:hover { opacity: 0.9; }
+        .link-row { margin-top: 12px; text-align: center; }
+        .link-row a { color: var(--primary-blue); text-decoration: none; font-weight: 600; }
+        .error {
+            background: #ffe2e2;
+            padding: 10px 12px;
+            color: #b91c1c;
+            border-left: 4px solid #ef4444;
+            border-radius: 8px;
+            margin-bottom: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Welcome back</h2>
+    <p class="subtitle">Sign in to continue.</p>
+
+    {% if error %}
+        <div class="error">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        <div class="form-group">
+            <label for="inputUsername">Username</label>
+            <input type="text" value="{{ last_username }}" name="username" id="inputUsername" required autofocus>
+        </div>
+
+        <div class="form-group">
+            <label for="inputPassword">Password</label>
+            <input type="password" name="password" id="inputPassword" required>
+        </div>
+
+        <input type="hidden" name="csrf_token" value="{{ csrf_token('authenticate') }}">
+        <button type="submit">Sign in</button>
+    </form>
+
+    <div class="link-row">
+        New here? <a href="{{ path('app_register') }}">Create an account</a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Management{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --light-gray: #f8f9fa;
+            --text-dark: #2c3e50;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        table.user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .user-table thead th {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .user-table tbody td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .user-table tbody tr:hover td {
+            background: rgba(64, 224, 208, 0.08);
+        }
+
+        .user-table a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            margin-right: 0.5rem;
+        }
+
+        .user-table a:hover {
+            color: var(--accent-turquoise);
+        }
+    </style>
+
+    <h1>User Management</h1>
+
+    {% if users is empty %}
+        <p class="empty">No users found.</p>
+    {% else %}
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Roles</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.roles|join(', ') }}</td>
+                    <td>
+                        <a href="{{ path('app_user_show', {'id': user.id}) }}">View</a>
+                        <a href="{{ path('app_user_edit', {'id': user.id}) }}">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
+

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Service\ActivityLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,8 +24,10 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
@@ -32,6 +35,13 @@ final class ProductController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($product);
             $entityManager->flush();
+            $targetData = sprintf('Product ID: %d, Name: %s, Price: %.2f, Description: %s', 
+                $product->getId(), 
+                $product->getName(),
+                $product->getPrice(),
+                substr($product->getDescription() ?? '', 0, 100)
+            );
+            $logger->log('product_created', sprintf('Product #%d created (%s)', $product->getId(), $product->getName()), $targetData);
 
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -51,13 +61,20 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+            $targetData = sprintf('Product ID: %d, Name: %s, Price: %.2f, Description: %s', 
+                $product->getId(), 
+                $product->getName(),
+                $product->getPrice(),
+                substr($product->getDescription() ?? '', 0, 100)
+            );
+            $logger->log('product_updated', sprintf('Product #%d updated (%s)', $product->getId(), $product->getName()), $targetData);
 
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -69,11 +86,17 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_product_delete', methods: ['POST'])]
-    public function delete(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Product $product, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->getPayload()->getString('_token'))) {
+            $productId = $product->getId();
+            $productName = $product->getName();
+            $targetData = sprintf('Product ID: %d, Name: %s', $productId, $productName);
             $entityManager->remove($product);
             $entityManager->flush();
+            $logger->log('product_deleted', sprintf('Product #%d deleted (%s)', $productId, $productName), $targetData);
         }
 
         return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);

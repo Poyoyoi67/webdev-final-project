@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+            --light-gray: #f8f9fa;
+            --text-dark: #2c3e50;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .card h3 {
+            margin: 0;
+            color: var(--primary-blue);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 0.3rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
+            border: 1px solid rgba(0,0,0,0.04);
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--light-gray);
+            text-align: left;
+        }
+
+        thead th {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: white;
+        }
+
+        tbody tr:hover {
+            background: rgba(64, 224, 208, 0.08);
+        }
+
+        .status {
+            font-weight: 600;
+        }
+    </style>
+
+    <h1>Dashboard</h1>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Total Appointments</h3>
+            <div class="value">{{ totalAppointments }}</div>
+        </div>
+        <div class="card">
+            <h3>Doctors</h3>
+            <div class="value">{{ totalDoctors }}</div>
+        </div>
+        <div class="card">
+            <h3>Services</h3>
+            <div class="value">{{ totalServices }}</div>
+        </div>
+        <div class="card">
+            <h3>Payments</h3>
+            <div class="value">{{ totalPayments }}</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Appointments by Status</h3>
+        <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+            {% for status in trackedStatuses %}
+                <div class="card">
+                    <h3>{{ status|capitalize }}</h3>
+                    <div class="value">{{ statusCounts[status]|default(0) }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Upcoming Appointments</h3>
+        {% if upcoming is empty %}
+            <p>No upcoming appointments.</p>
+        {% else %}
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Service</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for appt in upcoming %}
+                    <tr>
+                        <td>{{ appt.appointmentDate|date('Y-m-d H:i') }}</td>
+                        <td>{{ appt.patientName }}</td>
+                        <td>{{ appt.doctor ? appt.doctor.name : '—' }}</td>
+                        <td>{{ appt.service ? appt.service.name : '—' }}</td>
+                        <td class="status">{{ appt.status }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
+

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Service;
 use App\Form\ServiceType;
 use App\Repository\ServiceRepository;
+use App\Service\ActivityLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,7 @@ final class ServiceController extends AbstractController
 
     #[Route('/new', name: 'app_service_new', methods: ['GET', 'POST'])]
     #[Route('/new', name: 'app_service_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
      $service = new Service();
      $form = $this->createForm(ServiceType::class, $service);
@@ -33,6 +34,13 @@ final class ServiceController extends AbstractController
      if ($form->isSubmitted() && $form->isValid()) {
          $entityManager->persist($service);
          $entityManager->flush();
+            $targetData = sprintf('Service ID: %d, Name: %s, Price: %s, Duration: %d minutes', 
+                $service->getId(), 
+                $service->getName(),
+                $service->getPrice(),
+                $service->getDuration()
+            );
+            $logger->log('service_created', sprintf('Service #%d created (%s)', $service->getId(), $service->getName()), $targetData);
 
             return $this->redirectToRoute('app_service_index');
         }
@@ -52,13 +60,20 @@ final class ServiceController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_service_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Service $service, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Service $service, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
         $form = $this->createForm(ServiceType::class, $service);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+            $targetData = sprintf('Service ID: %d, Name: %s, Price: %s, Duration: %d minutes', 
+                $service->getId(), 
+                $service->getName(),
+                $service->getPrice(),
+                $service->getDuration()
+            );
+            $logger->log('service_updated', sprintf('Service #%d updated (%s)', $service->getId(), $service->getName()), $targetData);
 
             return $this->redirectToRoute('app_service_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -70,11 +85,15 @@ final class ServiceController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_service_delete', methods: ['POST'])]
-    public function delete(Request $request, Service $service, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Service $service, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
         if ($this->isCsrfTokenValid('delete'.$service->getId(), $request->getPayload()->getString('_token'))) {
+            $serviceId = $service->getId();
+            $serviceName = $service->getName();
+            $targetData = sprintf('Service ID: %d, Name: %s', $serviceId, $serviceName);
             $entityManager->remove($service);
             $entityManager->flush();
+            $logger->log('service_deleted', sprintf('Service #%d deleted (%s)', $serviceId, $serviceName), $targetData);
         }
 
         return $this->redirectToRoute('app_service_index', [], Response::HTTP_SEE_OTHER);
