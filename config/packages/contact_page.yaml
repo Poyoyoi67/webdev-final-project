@@ -1,0 +1,19 @@
+# Contact page: safe env defaults (avoids "Environment variable not found" if .env keys are missing).
+# Inbox for the form uses CONTACT_MAIL_TO, or falls back to CONTACT_NOTIFY_EMAIL.
+parameters:
+    env(CONTACT_MAIL_TO): ''
+    env(CONTACT_NOTIFY_EMAIL): ''
+    env(CONTACT_MAIL_FROM_EMAIL): ''
+    env(CONTACT_MAIL_FROM_NAME): ''
+    env(CONTACT_BRAND_NAME): 'Health Center'
+    env(CONTACT_PUBLIC_EMAIL): ''
+    env(MAILER_FROM_ADDRESS): ''
+    env(MAILER_FROM_NAME): ''
+
+    # Clinic details & social links — edit here (no .env required). Leave URLs empty to hide.
+    app.contact.phone: '+63 900 123 4567'
+    app.contact.address: 'Main Street, Health District'
+    app.contact.hours: 'Mon - Sat, 8:00 AM - 6:00 PM'
+    app.contact.facebook_url: ''
+    app.contact.instagram_url: ''
+    app.contact.twitter_url: ''

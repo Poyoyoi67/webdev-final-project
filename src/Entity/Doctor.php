@@ -2,32 +2,56 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\DoctorRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Delete()
+    ],
+    normalizationContext: ['groups' => ['doctor:read']],
+    denormalizationContext: ['groups' => ['doctor:write']]
+)]
 #[ORM\Entity(repositoryClass: DoctorRepository::class)]
 class Doctor
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['doctor:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['doctor:read', 'doctor:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['doctor:read', 'doctor:write'])]
     private ?string $specialization = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['doctor:read', 'doctor:write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 20)]
+    #[Groups(['doctor:read', 'doctor:write'])]
     private ?string $contactNumber = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['doctor:read', 'doctor:write'])]
     private ?string $description = null;
 
     public function getId(): ?int

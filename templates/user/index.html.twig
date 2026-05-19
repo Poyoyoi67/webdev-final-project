@@ -1,90 +1,237 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User Management{% endblock %}
+{% block title %}User management — Health Center{% endblock %}
+
+{% block header %}Team &amp; accounts{% endblock %}
 
 {% block body %}
     <style>
-        :root {
-            --primary-blue: #000080;
-            --accent-turquoise: #40E0D0;
-            --light-gray: #f8f9fa;
-            --text-dark: #2c3e50;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        h1 {
-            text-align: center;
-            margin-bottom: 1.5rem;
+        .admin-page {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .admin-hero {
+            background: linear-gradient(135deg, #0f3c74 0%, #0b2a52 55%, #124a8f 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 12px 32px rgba(15, 60, 116, 0.22);
+            position: relative;
+            overflow: hidden;
+        }
+        .admin-hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -12%;
+            width: 45%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(36, 184, 181, 0.2) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .admin-hero h1 {
+            margin: 0 0 0.35rem;
+            font-size: clamp(1.25rem, 2vw, 1.5rem);
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 1;
+        }
+        .admin-hero p {
+            margin: 0;
+            color: #c8e4ff;
+            font-size: 0.9rem;
+            max-width: 36rem;
+            line-height: 1.45;
+            position: relative;
+            z-index: 1;
+        }
+        .kpi-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.1rem;
+        }
+        .kpi {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.85rem 1.1rem;
+            min-width: 140px;
+            box-shadow: 0 4px 14px rgba(15, 60, 116, 0.06);
+        }
+        .kpi .lbl {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+        }
+        .kpi .val {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #0f3c74;
+            line-height: 1.1;
+            margin-top: 0.2rem;
         }
 
-        table.user-table {
+        .table-panel {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(15, 60, 116, 0.07);
+            overflow: hidden;
+        }
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
-            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 2rem;
+            font-size: 0.88rem;
         }
-
-        .user-table thead th {
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
-            color: white;
-            padding: 1rem;
+        .data-table thead th {
             text-align: left;
-        }
-
-        .user-table tbody td {
             padding: 0.9rem 1rem;
-            border-bottom: 1px solid var(--light-gray);
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .data-table tbody td {
+            padding: 0.95rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        .data-table tbody tr:hover td {
+            background: #f8fafc;
+        }
+        .data-table .id-cell {
+            font-variant-numeric: tabular-nums;
+            color: #64748b;
+            font-weight: 600;
+            width: 56px;
+        }
+        .data-table .email-cell {
+            font-weight: 600;
+            color: #0f172a;
         }
 
-        .user-table tbody tr:hover td {
-            background: rgba(64, 224, 208, 0.08);
+        .role-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
         }
+        .role-pill {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+        .role-pill--admin { background: #fef3c7; color: #92400e; }
+        .role-pill--staff { background: #dbeafe; color: #1e40af; }
+        .role-pill--user { background: #f1f5f9; color: #475569; }
 
-        .user-table a {
-            color: var(--primary-blue);
+        .row-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .row-actions a {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
             text-decoration: none;
-            margin-right: 0.5rem;
+            transition: background 0.15s, color 0.15s;
         }
+        .row-actions .btn-view {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+        .row-actions .btn-view:hover { background: #dbeafe; }
+        .row-actions .btn-edit {
+            background: #f0fdfa;
+            color: #0f766e;
+            border: 1px solid #99f6e4;
+        }
+        .row-actions .btn-edit:hover { background: #ccfbf1; }
 
-        .user-table a:hover {
-            color: var(--accent-turquoise);
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem;
+            color: #64748b;
         }
     </style>
 
-    <h1>User Management</h1>
+    <div class="admin-page">
+        <div class="admin-hero">
+            <h1>User management</h1>
+            <p>Accounts that can sign in to this system. Edit roles carefully — admins have full access to clinic data and settings.</p>
+        </div>
 
-    {% if users is empty %}
-        <p class="empty">No users found.</p>
-    {% else %}
-        <table class="user-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Roles</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.roles|join(', ') }}</td>
-                    <td>
-                        <a href="{{ path('app_user_show', {'id': user.id}) }}">View</a>
-                        <a href="{{ path('app_user_edit', {'id': user.id}) }}">Edit</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+        {% if users is empty %}
+            <div class="table-panel">
+                <div class="empty-state">No users found.</div>
+            </div>
+        {% else %}
+            <div class="kpi-row">
+                <div class="kpi">
+                    <div class="lbl">Total users</div>
+                    <div class="val">{{ users|length }}</div>
+                </div>
+            </div>
+
+            <div class="table-panel">
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Roles</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td class="id-cell">{{ user.id }}</td>
+                                <td class="email-cell">{{ user.email }}</td>
+                                <td>
+                                    <div class="role-pills">
+                                        {% for role in user.roles %}
+                                            {% set pill = 'role-pill--user' %}
+                                            {% if role == 'ROLE_ADMIN' %}{% set pill = 'role-pill--admin' %}
+                                            {% elseif role == 'ROLE_STAFF' %}{% set pill = 'role-pill--staff' %}
+                                            {% endif %}
+                                            <span class="role-pill {{ pill }}">{{ role }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a href="{{ path('app_user_show', {id: user.id}) }}" class="btn-view">View</a>
+                                        <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn-edit">Edit</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
-

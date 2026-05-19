@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\ActivityLog;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class ActivityLogger
 {
@@ -22,11 +23,9 @@ class ActivityLogger
         $log->setTargetData($targetData);
 
         $user = $this->security->getUser();
-        if ($user) {
-            if (method_exists($user, 'getUsername')) {
-                $log->setUsername($user->getUsername());
-            }
-            
+        if ($user instanceof UserInterface) {
+            $log->setUsername($user->getUserIdentifier());
+
             // Get user role (primary role)
             $roles = $user->getRoles();
             if (!empty($roles)) {

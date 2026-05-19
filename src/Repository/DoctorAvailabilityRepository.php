@@ -29,6 +29,36 @@ class DoctorAvailabilityRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Doctor IDs marked available=true for the given calendar date (typically "today").
+     *
+     * @return list<int>
+     */
+    public function findAvailableDoctorIdsForDate(\DateTimeInterface $date): array
+    {
+        $day = $date->format('Y-m-d');
+
+        /** @var DoctorAvailability[] $availabilities */
+        $availabilities = $this->createQueryBuilder('a')
+            ->join('a.doctor', 'd')->addSelect('d')
+            ->andWhere('a.date = :day')
+            ->andWhere('a.available = :yes')
+            ->setParameter('day', $day)
+            ->setParameter('yes', true)
+            ->getQuery()
+            ->getResult();
+
+        $ids = [];
+        foreach ($availabilities as $row) {
+            $doctor = $row->getDoctor();
+            if ($doctor && null !== $doctor->getId()) {
+                $ids[] = $doctor->getId();
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
 }
 
 

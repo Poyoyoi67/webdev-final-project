@@ -27,6 +27,8 @@ final class AppointmentController extends AbstractController
     #[Route('/new', name: 'app_appointment_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyCrudForRegularUsers();
+
         $appointment = new Appointment();
         $form = $this->createForm(AppointmentType::class, $appointment);
         $form->handleRequest($request);
@@ -73,6 +75,8 @@ final class AppointmentController extends AbstractController
     #[Route('/{id}/edit', name: 'app_appointment_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyCrudForRegularUsers();
+
         $form = $this->createForm(AppointmentType::class, $appointment);
         $form->handleRequest($request);
 
@@ -99,6 +103,8 @@ final class AppointmentController extends AbstractController
     #[Route('/{id}', name: 'app_appointment_delete', methods: ['POST'])]
     public function delete(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyCrudForRegularUsers();
+
         if ($this->isCsrfTokenValid('delete'.$appointment->getId(), $request->getPayload()->getString('_token'))) {
             $appointmentId = $appointment->getId();
             $patientName = $appointment->getPatientName();
@@ -109,5 +115,12 @@ final class AppointmentController extends AbstractController
         }
 
         return $this->redirectToRoute('app_appointment_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function denyCrudForRegularUsers(): void
+    {
+        if (!$this->isGranted('ROLE_STAFF') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('You only have view access.');
+        }
     }
 }

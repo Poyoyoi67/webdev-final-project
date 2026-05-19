@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\AppointmentPaymentRepository;
 use App\Repository\AppointmentRepository;
+use App\Repository\DoctorAvailabilityRepository;
 use App\Repository\DoctorRepository;
 use App\Repository\ServiceRepository;
 use DateTimeImmutable;
@@ -11,17 +12,34 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/dashboard')]
 final class DashboardController extends AbstractController
 {
-    #[Route(name: 'app_dashboard', methods: ['GET'])]
+    /** Patient clinic overview and staff analytics (role decides the view). */
+    #[Route('/home', name: 'app_account_home', methods: ['GET'])]
+    #[Route('/dashboard', name: 'app_dashboard', methods: ['GET'])]
     public function index(
         DoctorRepository $doctorRepository,
         ServiceRepository $serviceRepository,
         AppointmentRepository $appointmentRepository,
         AppointmentPaymentRepository $paymentRepository,
+        DoctorAvailabilityRepository $doctorAvailabilityRepository,
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $isStaffArea = $this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_STAFF');
+        if (!$isStaffArea) {
+            $today = new DateTimeImmutable('today');
+            $services = $serviceRepository->findBy([], ['name' => 'ASC']);
+            $doctors = $doctorRepository->findBy([], ['name' => 'ASC']);
+            $availableDoctorIds = $doctorAvailabilityRepository->findAvailableDoctorIdsForDate($today);
+
+            return $this->render('dashboard/patient.html.twig', [
+                'services' => $services,
+                'doctors' => $doctors,
+                'availableDoctorIds' => $availableDoctorIds,
+                'availabilityLabelDate' => $today,
+            ]);
+        }
 
         $trackedStatuses = ['scheduled', 'finished', 'pending', 'confirmed', 'cancelled'];
         $statusCounts = $appointmentRepository->countByStatuses($trackedStatuses);

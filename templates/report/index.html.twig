@@ -1,105 +1,384 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reports{% endblock %}
+{% block title %}Reports — Health Center{% endblock %}
+
+{% block header %}Reports &amp; analytics{% endblock %}
 
 {% block body %}
     <style>
-        :root {
-            --primary-blue: #000080;
-            --accent-turquoise: #40E0D0;
-            --dark-navy: #03033f;
-            --white: #ffffff;
-            --light-gray: #f8f9fa;
-            --text-dark: #2c3e50;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        .report-wrap {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            max-width: 1160px;
+            margin: 0 auto;
         }
 
-        .reports-header {
-            text-align: center;
-            margin-bottom: 2rem;
+        .report-hero {
+            background: linear-gradient(135deg, #0f3c74 0%, #0b2a52 55%, #124a8f 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 1.5rem 1.5rem 1.35rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 12px 32px rgba(15, 60, 116, 0.22);
+            position: relative;
+            overflow: hidden;
         }
-
-        .reports-header h1 {
+        .report-hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -15%;
+            width: 55%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(36, 184, 181, 0.22) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .report-hero h1 {
+            margin: 0 0 0.35rem;
+            font-size: clamp(1.35rem, 2.2vw, 1.55rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 1;
+        }
+        .report-hero p {
             margin: 0;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #c8e4ff;
+            font-size: 0.92rem;
+            max-width: 38rem;
+            line-height: 1.45;
+            position: relative;
+            z-index: 1;
         }
 
-        .cards {
+        .report-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+        @media (min-width: 900px) {
+            .report-grid {
+                grid-template-columns: 1fr 320px;
+                align-items: start;
+            }
         }
 
-        .card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 1.2rem 1.4rem;
-            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
-            border: 1px solid rgba(0,0,0,0.04);
-        }
-
-        .card h3 {
-            margin: 0 0 0.4rem 0;
-            color: var(--primary-blue);
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .card .count {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--dark-navy);
-        }
-
-        .legend {
+        .kpi-total {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 1.35rem 1.4rem;
+            margin-bottom: 1rem;
             display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-            color: #4b5563;
-        }
-
-        .legend span {
-            display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 4px 20px rgba(15, 60, 116, 0.07);
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+        .kpi-total .label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+        }
+        .kpi-total .value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0f3c74;
+            letter-spacing: -0.04em;
+            line-height: 1;
+        }
+        .kpi-total .hint {
+            font-size: 0.85rem;
+            color: #64748b;
+            max-width: 220px;
+            line-height: 1.4;
         }
 
-        .legend .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1.25rem;
         }
+
+        .status-card {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 1.05rem 1.15rem;
+            box-shadow: 0 4px 16px rgba(15, 60, 116, 0.06);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(15, 60, 116, 0.1);
+        }
+        .status-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--status-color, #94a3b8);
+            border-radius: 4px 0 0 4px;
+        }
+        .status-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .status-card .name {
+            margin: 0;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #334155;
+            text-transform: capitalize;
+        }
+        .status-card .num {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+        .status-card .pct {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-top: 0.35rem;
+        }
+        .status-card .bar {
+            margin-top: 0.65rem;
+            height: 4px;
+            background: #f1f5f9;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .status-card .bar > span {
+            display: block;
+            height: 100%;
+            border-radius: 999px;
+            background: var(--status-color, #94a3b8);
+            transition: width 0.5s ease;
+        }
+        .status-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            color: var(--status-color);
+            border: 1px solid #e2e8f0;
+        }
+        .status-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 1.15rem 1.2rem;
+            box-shadow: 0 4px 18px rgba(15, 60, 116, 0.06);
+            margin-bottom: 1.25rem;
+        }
+        .panel h2 {
+            margin: 0 0 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #0f3c74;
+        }
+
+        .stack-track {
+            display: flex;
+            height: 14px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: #f1f5f9;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+        }
+        .stack-seg {
+            min-width: 0;
+            transition: width 0.45s ease;
+        }
+        .stack-seg:first-child { border-radius: 999px 0 0 999px; }
+        .stack-seg:last-child { border-radius: 0 999px 999px 0; }
+        .stack-seg:only-child { border-radius: 999px; }
+
+        .dist-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+        .dist-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            font-size: 0.82rem;
+        }
+        .dist-row .left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #475569;
+            text-transform: capitalize;
+        }
+        .dist-row .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .dist-row .right {
+            font-weight: 700;
+            color: #0f172a;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .side-card {
+            background: linear-gradient(180deg, #f8fafc 0%, #fff 40%);
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 1.2rem;
+            box-shadow: 0 4px 18px rgba(15, 60, 116, 0.06);
+        }
+        .side-card h2 {
+            margin: 0 0 0.75rem;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #0f3c74;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .side-card ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .side-card li {
+            font-size: 0.86rem;
+            color: #475569;
+            padding: 0.45rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            line-height: 1.4;
+        }
+        .side-card li:last-child { border-bottom: none; }
     </style>
 
-    <div class="reports-header">
-        <h1>Appointment Reports</h1>
-        <p>Quick overview of appointments by status.</p>
-    </div>
+    {% set status_colors = {
+        'scheduled': '#0f3c74',
+        'finished': '#24b8b5',
+        'pending': '#f59e0b',
+        'confirmed': '#3b82f6',
+        'cancelled': '#dc2626'
+    } %}
 
-    <div class="cards">
-        <div class="card">
-            <h3>Total Appointments</h3>
-            <div class="count">{{ totalAppointments }}</div>
+    <div class="report-wrap">
+        <div class="report-hero">
+            <h1>Appointment reports</h1>
+            <p>Volume and status mix at a glance. Figures reflect all appointments in your system; use filters elsewhere if you need date ranges later.</p>
         </div>
 
-        {% for status in trackedStatuses %}
-            <div class="card">
-                <h3>{{ status|capitalize }}</h3>
-                <div class="count">{{ statusCounts[status]|default(0) }}</div>
-            </div>
-        {% endfor %}
-    </div>
+        <div class="report-grid">
+            <div class="report-main">
+                <div class="kpi-total">
+                    <div>
+                        <div class="label">Total appointments</div>
+                        <div class="value">{{ totalAppointments }}</div>
+                    </div>
+                    <p class="hint">Every row counted once. Status cards sum to this total when all visits are in one of the tracked states.</p>
+                </div>
 
-    <div class="legend">
-        <span><span class="dot" style="background: var(--primary-blue)"></span>Scheduled</span>
-        <span><span class="dot" style="background: var(--accent-turquoise)"></span>Finished/Completed</span>
-        <span><span class="dot" style="background: #f59e0b"></span>Pending</span>
-        <span><span class="dot" style="background: #dc2626"></span>Cancelled</span>
+                <div class="panel">
+                    <h2>Status mix</h2>
+                    {% if totalAppointments > 0 %}
+                        <div class="stack-track" role="img" aria-label="Appointment status distribution">
+                            {% for status in trackedStatuses %}
+                                {% set c = statusCounts[status]|default(0) %}
+                                {% set w = (c / totalAppointments * 100)|round(3) %}
+                                {% if w > 0 %}
+                                    <div class="stack-seg" style="width: {{ w }}%; background: {{ status_colors[status]|default('#94a3b8') }}" title="{{ status|capitalize }}: {{ c }}"></div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p style="margin:0; color:#64748b; font-size:0.9rem;">No appointments yet — the bar will fill once data exists.</p>
+                    {% endif %}
+
+                    <div class="dist-legend">
+                        {% for status in trackedStatuses %}
+                            {% set c = statusCounts[status]|default(0) %}
+                            {% set pct = totalAppointments > 0 ? (c / totalAppointments * 100)|round(1) : 0 %}
+                            <div class="dist-row">
+                                <span class="left">
+                                    <span class="dot" style="background: {{ status_colors[status]|default('#94a3b8') }}"></span>
+                                    {{ status }}
+                                </span>
+                                <span class="right">{{ c }} <span style="font-weight:500;color:#94a3b8;">({{ pct }}%)</span></span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="status-grid">
+                    {% for status in trackedStatuses %}
+                        {% set c = statusCounts[status]|default(0) %}
+                        {% set pct = totalAppointments > 0 ? (c / totalAppointments * 100)|round(1) : 0 %}
+                        {% set col = status_colors[status]|default('#64748b') %}
+                        <article class="status-card" style="--status-color: {{ col }}">
+                            <div class="status-card-head">
+                                <div>
+                                    <p class="name">{{ status }}</p>
+                                    <div class="num">{{ c }}</div>
+                                    <div class="pct">{% if totalAppointments > 0 %}{{ pct }}% of total{% else %}—{% endif %}</div>
+                                </div>
+                                <div class="status-icon" aria-hidden="true">
+                                    {% if status == 'scheduled' %}
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                                    {% elseif status == 'finished' %}
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    {% elseif status == 'pending' %}
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    {% elseif status == 'confirmed' %}
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>
+                                    {% elseif status == 'cancelled' %}
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                    {% else %}
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="bar"><span style="width: {{ totalAppointments > 0 ? pct : 0 }}%;"></span></div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <aside class="report-side">
+                <div class="side-card">
+                    <h2>Reading the report</h2>
+                    <ul>
+                        <li><strong>Total</strong> is the full appointment count across every status.</li>
+                        <li>The <strong>mix bar</strong> shows how bookings split between scheduled, finished, pending, confirmed, and cancelled.</li>
+                        <li><strong>Percentages</strong> use total appointments as the denominator.</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
     </div>
 {% endblock %}
-

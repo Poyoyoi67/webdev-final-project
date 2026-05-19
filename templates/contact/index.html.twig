@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — Health Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f3c74;
+            --primary-dark: #0b2a52;
+            --accent: #24b8b5;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --surface: #ffffff;
+            --bg: #e8f0f8;
+            --border: #c5d9ed;
+            --sidebar: #0f3c74;
+            --shadow: 0 4px 24px rgba(15, 60, 116, 0.08);
+            --shadow-lg: 0 20px 50px rgba(15, 60, 116, 0.12);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            color: var(--ink);
+            background: var(--bg);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+        .app-bg {
+            min-height: calc(100vh - 0px);
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(36, 184, 181, 0.12), transparent),
+                linear-gradient(180deg, #dfeaf6 0%, var(--bg) 35%, #eef4fb 100%);
+        }
+        .container-narrow { width: min(1120px, 94%); margin: 0 auto; }
+
+        .page-head {
+            padding: 20px 0 8px;
+        }
+        .page-head-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-title-block h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            letter-spacing: -0.02em;
+        }
+        .page-title-block p {
+            margin: 4px 0 0;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+        .status-pill {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid var(--border);
+            color: var(--primary);
+        }
+
+        .contact-app {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            margin-bottom: 48px;
+        }
+        .contact-hero {
+            display: grid;
+            grid-template-columns: 42% 58%;
+            min-height: 520px;
+        }
+        .hero-media {
+            position: relative;
+            background:
+                linear-gradient(170deg, rgba(15, 60, 116, 0.84), rgba(11, 42, 82, 0.92)),
+                url('/images/doctor.jpg') center/cover no-repeat;
+            display: flex;
+            align-items: flex-end;
+            padding: 28px 24px;
+            color: #e8f2ff;
+        }
+        .hero-media::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(36, 184, 181, 0.24), transparent 48%);
+        }
+        .hero-caption {
+            position: relative;
+            z-index: 1;
+            max-width: 260px;
+        }
+        .hero-caption h3 {
+            margin: 0 0 8px;
+            font-size: 1.4rem;
+            line-height: 1.2;
+        }
+        .hero-caption p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #c9dff9;
+        }
+        .form-main {
+            padding: 28px 26px 32px;
+            background: #fafcfe;
+            border-left: 1px solid var(--border);
+        }
+        .contact-meta {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(180px, 1fr));
+            gap: 14px;
+            padding: 16px;
+            background: #f3f8fd;
+            border-top: 1px solid var(--border);
+        }
+        .meta-card {
+            background: linear-gradient(180deg, #11427d, #0f3c74);
+            color: #e6f0fb;
+            border-radius: 12px;
+            padding: 14px 16px;
+            min-height: 92px;
+            box-shadow: var(--shadow);
+        }
+        .meta-card strong {
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.72rem;
+            color: #9ec9ff;
+            margin-bottom: 7px;
+        }
+        .meta-card a {
+            color: #fff;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .meta-card p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .meta-card a:hover { color: #a5f0ee; }
+        .meta-social {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .meta-social a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.13);
+            text-decoration: none;
+            color: #fff;
+        }
+        .meta-social a svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+        .form-main h2 {
+            margin: 0 0 6px;
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+        }
+        .form-main .sub {
+            margin: 0 0 20px;
+            font-size: 0.88rem;
+            color: var(--muted);
+        }
+
+        .flash {
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            line-height: 1.45;
+        }
+        .flash-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .flash-error {
+            background: #fef2f2;
+            color: #7f1d1d;
+            border: 1px solid #fecaca;
+        }
+        .form-errors {
+            color: #b91c1c;
+            font-size: 0.88rem;
+            margin-bottom: 14px;
+        }
+        .contact-form .form-row { margin-bottom: 14px; }
+        .contact-form label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: var(--primary-dark);
+            margin-bottom: 6px;
+        }
+        .contact-form input[type="text"],
+        .contact-form input[type="email"],
+        .contact-form textarea {
+            width: 100%;
+            padding: 11px 13px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font: inherit;
+            color: var(--ink);
+            background: #fff;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(36, 184, 181, 0.2);
+        }
+        .contact-form textarea { resize: vertical; min-height: 130px; }
+        .contact-form ul { list-style: none; padding: 0; margin: 4px 0 0; }
+        .contact-form ul li { color: #b91c1c; font-size: 0.78rem; }
+
+        .form-actions {
+            margin-top: 20px;
+            padding-top: 4px;
+        }
+        .btn-send {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 22px;
+            border: none;
+            border-radius: 10px;
+            background: var(--accent);
+            color: #05302f;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.12s, box-shadow 0.12s;
+            box-shadow: 0 4px 14px rgba(36, 184, 181, 0.35);
+        }
+        .btn-send:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 22px rgba(36, 184, 181, 0.4);
+        }
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .config-note {
+            font-size: 0.82rem;
+            color: #92400e;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+        .form-footnote {
+            margin-top: 16px;
+            font-size: 0.82rem;
+            color: var(--muted);
+            text-align: center;
+        }
+        .form-footnote a { color: var(--primary); font-weight: 600; text-decoration: none; }
+        .form-footnote a:hover { text-decoration: underline; }
+
+        @media (max-width: 860px) {
+            .contact-hero { grid-template-columns: 1fr; }
+            .hero-media {
+                min-height: 240px;
+                justify-content: center;
+                text-align: center;
+            }
+            .hero-caption { max-width: 100%; }
+            .form-main { border-left: none; border-top: 1px solid var(--border); }
+            .contact-meta { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+{% include 'partials/public_nav.html.twig' %}
+
+<div class="app-bg">
+    <div class="container-narrow page-head">
+        <div class="page-head-inner">
+            <div class="page-title-block">
+                <h1>Contact clinic</h1>
+                <p>Message the desk or reach us by phone — we respond during clinic hours.</p>
+            </div>
+            <span class="status-pill">Patient &amp; visitor inquiries</span>
+        </div>
+    </div>
+
+    <div class="container-narrow">
+        <div class="contact-app">
+            <div class="contact-hero">
+                <div class="hero-media" aria-hidden="true">
+                    <div class="hero-caption">
+                        <h3>Contact Us</h3>
+                        <p>Fast patient support, appointment help, and clinic desk assistance.</p>
+                    </div>
+                </div>
+
+                <div class="form-main">
+                    <h2>Send a message</h2>
+                    <p class="sub">We usually reply within one business day. For urgent care, call the clinic directly.</p>
+
+                    {% for message in app.flashes('success') %}
+                        <div class="flash flash-success">{{ message }}</div>
+                    {% endfor %}
+                    {% for message in app.flashes('error') %}
+                        <div class="flash flash-error">{{ message }}</div>
+                    {% endfor %}
+
+                    {% if not mailConfigured %}
+                        <p class="config-note">
+                            Set <strong>CONTACT_MAIL_TO</strong> or <strong>CONTACT_NOTIFY_EMAIL</strong> in <code>.env</code> for the inbox. Use a real <strong>MAILER_DSN</strong> (not <code>null://null</code>).
+                        </p>
+                    {% endif %}
+
+                    {{ form_start(form, { attr: { class: 'contact-form', novalidate: 'novalidate' } }) }}
+                    {% if not form.vars.valid %}
+                        <div class="form-errors">Please fix the errors below.</div>
+                    {% endif %}
+
+                    <div class="form-row">
+                        {{ form_label(form.name) }}
+                        {{ form_widget(form.name) }}
+                        {{ form_errors(form.name) }}
+                    </div>
+                    <div class="form-row">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+                    <div class="form-row">
+                        {{ form_label(form.subject) }}
+                        {{ form_widget(form.subject) }}
+                        {{ form_errors(form.subject) }}
+                    </div>
+                    <div class="form-row">
+                        {{ form_label(form.message) }}
+                        {{ form_widget(form.message) }}
+                        {{ form_errors(form.message) }}
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-send" {{ not mailConfigured ? 'disabled' : '' }}>Send message</button>
+                    </div>
+                    {{ form_end(form) }}
+
+                    <p class="form-footnote">
+                        Clinic details and social URLs are edited in <code>config/packages/contact_page.yaml</code>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="contact-meta" aria-label="Clinic contact details">
+                <div class="meta-card">
+                    <strong>Call us</strong>
+                    {% if clinicPhone %}
+                        <p><a href="tel:{{ clinicPhone|replace({' ': '', '-': '', '(': '', ')': ''})|e('html_attr') }}">{{ clinicPhone }}</a></p>
+                    {% else %}
+                        <p>—</p>
+                    {% endif %}
+                </div>
+                <div class="meta-card">
+                    <strong>Location</strong>
+                    {% if clinicAddress %}
+                        <p>{{ clinicAddress }}</p>
+                    {% else %}
+                        <p>—</p>
+                    {% endif %}
+                </div>
+                <div class="meta-card">
+                    <strong>Hours</strong>
+                    {% if clinicHours %}
+                        <p>{{ clinicHours }}</p>
+                    {% else %}
+                        <p>—</p>
+                    {% endif %}
+                    {% if publicContactEmail %}
+                        <p style="margin-top:8px;"><a href="mailto:{{ publicContactEmail|e('html_attr') }}">{{ publicContactEmail }}</a></p>
+                    {% endif %}
+                    {% if facebookUrl or instagramUrl or twitterUrl %}
+                        <div class="meta-social">
+                            {% if facebookUrl %}
+                                <a href="{{ facebookUrl|e('html_attr') }}" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                </a>
+                            {% endif %}
+                            {% if instagramUrl %}
+                                <a href="{{ instagramUrl|e('html_attr') }}" target="_blank" rel="noopener noreferrer" title="Instagram" aria-label="Instagram">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                </a>
+                            {% endif %}
+                            {% if twitterUrl %}
+                                <a href="{{ twitterUrl|e('html_attr') }}" target="_blank" rel="noopener noreferrer" title="X (Twitter)" aria-label="X (Twitter)">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -3,13 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Clinic Registration</title>
     <style>
         :root {
-            --primary-blue: #000080;
-            --accent-turquoise: #40E0D0;
-            --bg: #f2f5fb;
+            --primary: #0f3c74;
+            --primary-dark: #0b2a52;
+            --accent: #24b8b5;
+            --bg: #eef4fb;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #d4e1f0;
         }
+
+        * { box-sizing: border-box; }
+
         body {
             font-family: 'Segoe UI', Tahoma, sans-serif;
             background: var(--bg);
@@ -18,58 +25,125 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            padding: 20px;
         }
-        .card {
+
+        .layout {
+            width: min(980px, 100%);
+            display: grid;
+            grid-template-columns: 1.05fr 1fr;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 42px rgba(15, 60, 116, 0.18);
             background: #fff;
-            width: 440px;
-            padding: 32px;
-            border-radius: 16px;
-            box-shadow: 0 14px 40px rgba(0,0,0,0.12);
         }
+
+        .aside {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #e8f2ff;
+            padding: 38px 30px;
+        }
+
+        .aside h2 {
+            margin: 0 0 10px;
+            font-size: 1.9rem;
+        }
+
+        .aside p {
+            margin: 0;
+            color: #d6e5fb;
+            line-height: 1.6;
+        }
+
+        .checks {
+            margin-top: 22px;
+            padding-left: 18px;
+        }
+
+        .checks li {
+            margin-bottom: 8px;
+            color: #d9ebff;
+        }
+
+        .card {
+            padding: 34px;
+        }
+
         h1 {
-            margin: 0 0 6px 0;
+            margin: 0 0 6px;
             font-weight: 700;
-            color: var(--primary-blue);
-            text-align: center;
+            color: var(--primary);
         }
+
         p.subtitle {
-            margin: 0 0 18px 0;
-            text-align: center;
-            color: #6b7280;
+            margin: 0 0 18px;
+            color: var(--muted);
         }
+
         .form-row { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; color: #374151; font-weight: 600; }
+
+        label { display: block; margin-bottom: 6px; color: var(--text); font-weight: 600; }
+
         input {
             width: 100%;
             padding: 12px;
             border-radius: 10px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border);
             font-size: 15px;
         }
-        input:focus { outline: 2px solid var(--accent-turquoise); border-color: transparent; }
+
+        input:focus {
+            outline: 2px solid rgba(36, 184, 181, 0.5);
+            border-color: transparent;
+        }
+
         button {
             width: 100%;
             padding: 12px;
             border: none;
             border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             color: #fff;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.2s ease;
+            transition: transform 0.2s ease;
             margin-top: 4px;
         }
-        button:hover { opacity: 0.9; }
+
+        button:hover { transform: translateY(-1px); }
+
         .login-link { text-align: center; margin-top: 12px; }
-        .login-link a { color: var(--primary-blue); text-decoration: none; font-weight: 600; }
-        .errors { margin-bottom: 12px; }
+
+        .login-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+        .errors {
+            margin-bottom: 12px;
+            color: #b91c1c;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 840px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
+<div class="layout">
+    <aside class="aside">
+        <h2>Join Our Clinic Platform</h2>
+        <p>Create your account to access appointment tools, schedules, and patient services.</p>
+        <ul class="checks">
+            <li>Simple and secure sign-up</li>
+            <li>Designed for healthcare workflows</li>
+            <li>Fast onboarding for clinic staff</li>
+        </ul>
+    </aside>
 <div class="card">
     <h1>Create your account</h1>
-    <p class="subtitle">Staff can register directly; admins can add roles later.</p>
+    <p class="subtitle">Professional registration for your clinic portal.</p>
 
     <div class="errors">
     {{ form_errors(registrationForm) }}
@@ -77,9 +151,9 @@
 
     {{ form_start(registrationForm) }}
         <div class="form-row">
-            {{ form_label(registrationForm.username, 'Username') }}
-            {{ form_widget(registrationForm.username) }}
-            {{ form_errors(registrationForm.username) }}
+            {{ form_label(registrationForm.email, 'Email') }}
+            {{ form_widget(registrationForm.email, {'attr': {'placeholder': 'Enter your email'}}) }}
+            {{ form_errors(registrationForm.email) }}
         </div>
         <div class="form-row">
             {{ form_label(registrationForm.plainPassword, 'Password') }}
@@ -96,6 +170,7 @@
         Already have an account?
         <a href="{{ path('app_login') }}">Log in</a>
     </div>
+</div>
 </div>
 </body>
 </html>

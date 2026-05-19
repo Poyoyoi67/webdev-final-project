@@ -1,56 +1,217 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Transactions{% endblock %}
+{% block title %}Transactions — Health Center{% endblock %}
+
+{% block header %}Payments &amp; receipts{% endblock %}
 
 {% block body %}
     <style>
-        :root {
-            --primary-blue: #000080;
-            --accent-turquoise: #40E0D0;
-            --light-gray: #f8f9fa;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        .admin-page {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            max-width: 1280px;
+            margin: 0 auto;
         }
-        h1 { text-align: center; margin-bottom: 1.5rem; }
-        table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 8px 24px rgba(3,3,63,0.12); border-radius: 12px; overflow: hidden; }
-        th, td { padding: 0.9rem; border-bottom: 1px solid var(--light-gray); }
-        thead th { background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise)); color: #fff; text-align: left; }
+        .admin-hero {
+            background: linear-gradient(135deg, #0f3c74 0%, #0b2a52 55%, #124a8f 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 12px 32px rgba(15, 60, 116, 0.22);
+            position: relative;
+            overflow: hidden;
+        }
+        .admin-hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -12%;
+            width: 45%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(36, 184, 181, 0.2) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .admin-hero h1 {
+            margin: 0 0 0.35rem;
+            font-size: clamp(1.25rem, 2vw, 1.5rem);
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        .admin-hero p {
+            margin: 0;
+            color: #c8e4ff;
+            font-size: 0.9rem;
+            max-width: 38rem;
+            line-height: 1.45;
+            position: relative;
+            z-index: 1;
+        }
+
+        .table-panel {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(15, 60, 116, 0.07);
+            overflow: hidden;
+        }
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.86rem;
+        }
+        .data-table thead th {
+            text-align: left;
+            padding: 0.9rem 1rem;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        .data-table tbody td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+        .data-table tbody tr:hover td {
+            background: #f8fafc;
+        }
+        .data-table .mono {
+            font-variant-numeric: tabular-nums;
+        }
+        .money {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: #0f172a;
+        }
+        .appt-link {
+            font-weight: 600;
+            color: #0f3c74;
+            text-decoration: none;
+        }
+        .appt-link:hover {
+            color: #24b8b5;
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+        .st-ongoing, .st-scheduled, .st-confirmed { background: #dbeafe; color: #1e40af; }
+        .st-pending { background: #fef3c7; color: #92400e; }
+        .st-finished, .st-completed { background: #d1fae5; color: #065f46; }
+        .st-cancelled { background: #fee2e2; color: #991b1b; }
+        .st-default { background: #f1f5f9; color: #475569; }
+
+        .pay-pending { background: #fef3c7; color: #92400e; }
+        .pay-paid { background: #d1fae5; color: #065f46; }
+        .pay-method { background: #e0e7ff; color: #3730a3; }
+
+        .btn-manage {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.45rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-decoration: none;
+            background: linear-gradient(135deg, #0f3c74, #1e5a9e);
+            color: #fff;
+            border: none;
+            box-shadow: 0 2px 8px rgba(15, 60, 116, 0.25);
+        }
+        .btn-manage:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem;
+            color: #64748b;
+        }
     </style>
 
-    <h1>Transactions</h1>
+    <div class="admin-page">
+        <div class="admin-hero">
+            <h1>Transactions</h1>
+            <p>Payment records tied to appointments. Open a row to record or adjust amounts, change, and method from the linked visit.</p>
+        </div>
 
-    {% if payments is empty %}
-        <p>No payments recorded yet.</p>
-    {% else %}
-        <table>
-            <thead>
-            <tr>
-                <th>Paid At</th>
-                <th>Appointment</th>
-                <th>Patient</th>
-                <th>Amount</th>
-                <th>Change</th>
-                <th>Method</th>
-                <th>Appt Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for payment in payments %}
-                <tr>
-                    <td>{{ payment.paidAt|date('Y-m-d H:i') }}</td>
-                    <td>#{{ payment.appointment.id }}</td>
-                    <td>{{ payment.appointment.patientName }}</td>
-                    <td>{{ payment.amount|number_format(2, '.', ',') }}</td>
-                    <td>{{ payment.changeAmount is not null ? payment.changeAmount|number_format(2, '.', ',') : '—' }}</td>
-                    <td>{{ payment.paymentMethod ? payment.paymentMethod|capitalize : '—' }}</td>
-                    <td>{{ payment.appointment.status ?? '—' }}</td>
-                    <td>
-                        <a href="{{ path('app_transactions_manage', {id: payment.appointment.id}) }}">View / Edit</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+        {% if payments is empty %}
+            <div class="table-panel">
+                <div class="empty-state">No payments recorded yet.</div>
+            </div>
+        {% else %}
+            <div class="table-panel">
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Paid at</th>
+                                <th>Appointment</th>
+                                <th>Patient</th>
+                                <th>Amount</th>
+                                <th>Change</th>
+                                <th>Method</th>
+                                <th>Appt status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for payment in payments %}
+                            {% set st = (payment.appointment.status ?? '')|lower|trim %}
+                            {% set st_class = 'st-default' %}
+                            {% if st in ['ongoing', 'scheduled', 'confirmed'] %}{% set st_class = 'st-' ~ st %}
+                            {% elseif st == 'pending' %}{% set st_class = 'st-pending' %}
+                            {% elseif st in ['finished', 'completed'] %}{% set st_class = 'st-finished' %}
+                            {% elseif st == 'cancelled' %}{% set st_class = 'st-cancelled' %}
+                            {% endif %}
+                            {% set method_raw = (payment.paymentMethod ?? '')|lower %}
+                            {% set pay_badge = 'pay-method' %}
+                            {% if method_raw == '' or method_raw == 'pending' %}{% set pay_badge = 'pay-pending' %}
+                            {% elseif method_raw in ['cash', 'card', 'gcash', 'transfer'] %}{% set pay_badge = 'pay-paid' %}
+                            {% endif %}
+                            <tr>
+                                <td class="mono">{{ payment.paidAt|date('M j, Y') }}<br><span style="color:#64748b">{{ payment.paidAt|date('g:i A') }}</span></td>
+                                <td>
+                                    <a class="appt-link" href="{{ path('app_transactions_manage', {id: payment.appointment.id}) }}">#{{ payment.appointment.id }}</a>
+                                </td>
+                                <td><strong>{{ payment.appointment.patientName }}</strong></td>
+                                <td class="money">{{ payment.amount|number_format(2, '.', ',') }}</td>
+                                <td class="mono">{% if payment.changeAmount is not null %}{{ payment.changeAmount|number_format(2, '.', ',') }}{% else %}—{% endif %}</td>
+                                <td>
+                                    <span class="badge {{ pay_badge }}">{{ payment.paymentMethod ? payment.paymentMethod|capitalize : 'Pending' }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge {{ st_class }}">{{ payment.appointment.status ?? '—' }}</span>
+                                </td>
+                                <td>
+                                    <a class="btn-manage" href="{{ path('app_transactions_manage', {id: payment.appointment.id}) }}">Manage</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
-
-

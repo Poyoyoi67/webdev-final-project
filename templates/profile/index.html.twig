@@ -94,18 +94,18 @@
 
     <div class="profile-card">
         <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.2rem;">
-            <img class="avatar" src="{{ user.profilePicture ?: asset('images/backgroynd.png') }}" alt="Avatar">
+            <img class="avatar" src="{{ user.profilePicture ?: '/images/backgroynd.png' }}" alt="Avatar">
             <div>
-                <div style="font-weight:700; color:var(--primary-blue); font-size:1.2rem;">{{ user.username }}</div>
+                <div style="font-weight:700; color:var(--primary-blue); font-size:1.2rem;">{{ user.email }}</div>
                 <div style="color:#6b7280; font-size:0.95rem;">Roles: {{ user.roles|join(', ') }}</div>
             </div>
         </div>
 
         {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
             <div class="form-group">
-                {{ form_label(form.username) }}
-                {{ form_widget(form.username) }}
-                {{ form_errors(form.username) }}
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email) }}
+                {{ form_errors(form.email) }}
             </div>
 
             <div class="form-group">

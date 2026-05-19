@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookEasy - Appointment Scheduling</title>
+    <title>Health Center - Appointment Scheduling</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #000080;
-            --accent-turquoise: #40E0D0;
-            --dark-navy: #03033f;
-            --light-gray: #f8f9fa;
-            --medium-gray: #6c757d;
-            --white: #ffffff;
-            --text-dark: #2c3e50;
-            --shadow-light: 0 2px 10px rgba(0, 0, 128, 0.1);
-            --shadow-medium: 0 4px 20px rgba(0, 0, 128, 0.15);
-            --shadow-strong: 0 8px 30px rgba(3, 3, 63, 0.2);
+            --primary: #0f3c74;
+            --primary-dark: #0b2a52;
+            --accent: #24b8b5;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --surface: #ffffff;
+            --bg: #f4f8fc;
+            --border: #dbe7f3;
+            --shadow: 0 18px 40px rgba(15, 60, 116, 0.16);
         }
 
         * {
@@ -27,527 +26,549 @@
             box-sizing: border-box;
         }
 
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
-            line-height: 1.7;
-            color: var(--text-dark);
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            color: var(--ink);
+            background: var(--bg);
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 1200px;
+            width: min(1100px, 92%);
             margin: 0 auto;
-            padding: 0 20px;
         }
 
-        /* Typography */
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 0.5rem;
+        .btn {
+            text-decoration: none;
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            transition: 0.2s ease;
+            display: inline-block;
         }
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-navy) 100%);
-            color: var(--white);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow-medium);
+        .btn-primary {
+            background: var(--accent);
+            color: #073033;
         }
 
-        .nav {
+        .btn-primary:hover { transform: translateY(-1px); }
+
+        .btn-outline {
+            border-color: #c9defa;
+            color: #fff;
+            background: transparent;
+        }
+
+        .btn-outline-solid {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline-solid:hover {
+            background: rgba(15, 60, 116, 0.06);
+        }
+
+        .home-section-jump {
+            background: #eef4fb;
+            border-bottom: 1px solid var(--border);
+        }
+        .home-section-jump .container {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            justify-content: center;
             align-items: center;
+            gap: 10px 16px;
+            padding: 10px 0;
+            font-size: 0.88rem;
         }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--white), var(--accent-turquoise));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2.5rem;
-        }
-
-        .nav-menu a {
-            color: var(--white);
+        .home-section-jump a {
+            color: var(--primary);
+            font-weight: 600;
             text-decoration: none;
-            font-weight: 500;
-            position: relative;
-            transition: all 0.3s ease;
-            padding: 0.5rem 0;
         }
+        .home-section-jump a:hover { text-decoration: underline; }
 
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent-turquoise);
-            transition: width 0.3s ease;
-        }
-
-        .nav-menu a:hover::after {
-            width: 100%;
-        }
-
-        .login-btn {
-            background: linear-gradient(45deg, var(--accent-turquoise), #20c997);
-            color: var(--dark-navy);
-            padding: 0.75rem 1.5rem;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-light);
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, rgba(0, 0, 128, 0.3) 0%, rgba(3, 3, 63, 0.4) 100%), url('{{ asset('images/Background.jpg') }}');
+            background: linear-gradient(120deg, rgba(15, 60, 116, 0.88), rgba(11, 42, 82, 0.8)), url('/images/Background.jpg');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
-            padding: 6rem 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(64, 224, 208, 0.1) 0%, rgba(0, 0, 128, 0.1) 100%);
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
+            color: #fff;
+            padding: 88px 0 72px;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--primary-blue), var(--dark-navy));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: slideInFromTop 1s ease-out;
-        }
-
-        @keyframes slideInFromTop {
-            0% { opacity: 0; transform: translateY(-30px); }
-            100% { opacity: 1; transform: translateY(0); }
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 14px;
+            letter-spacing: -0.02em;
         }
 
         .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 3rem;
-            color: var(--medium-gray);
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: slideInFromBottom 1s ease-out 0.2s both;
-        }
-
-        @keyframes slideInFromBottom {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
+            max-width: 680px;
+            color: #dbe9fb;
+            margin-bottom: 24px;
+            font-size: 1.05rem;
         }
 
         .hero-buttons {
             display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            animation: fadeIn 1s ease-out 0.4s both;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+        .hero-trust {
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 28px;
+            font-size: 0.9rem;
+            color: #c8daf5;
+        }
+        .hero-trust strong { color: #fff; font-weight: 600; }
+
+        .stats-strip {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 0;
+            margin-top: -1px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+        .stat-item {
+            padding: 8px 12px;
+        }
+        .stat-value {
+            font-size: clamp(1.5rem, 3vw, 1.85rem);
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.03em;
+        }
+        .stat-label {
+            font-size: 0.88rem;
+            color: var(--muted);
+            margin-top: 4px;
         }
 
-        .btn {
-            padding: 1rem 2.5rem;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: 500;
-            display: inline-block;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-blue), var(--dark-navy));
-            color: var(--white);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-strong);
-        }
-
-        .btn-secondary {
-            background: var(--white);
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
-            box-shadow: var(--shadow-light);
-        }
-
-        .btn-secondary:hover {
-            background: var(--accent-turquoise);
-            color: var(--white);
-            border-color: var(--accent-turquoise);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        /* Features Section */
-        .features {
-            padding: 6rem 0;
-            background: var(--white);
-        }
+        section { padding: 68px 0; }
 
         .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 700;
+            font-size: 1.9rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+            letter-spacing: -0.02em;
         }
 
         .section-subtitle {
-            text-align: center;
-            font-size: 1.2rem;
-            color: var(--medium-gray);
-            margin-bottom: 4rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            color: var(--muted);
+            margin-bottom: 30px;
+            max-width: 720px;
         }
 
-        .features-grid {
+        .cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
         }
 
-        .feature-card {
-            text-align: center;
-            padding: 3rem 2rem;
-            border-radius: 20px;
-            background: var(--white);
-            box-shadow: var(--shadow-light);
-            transition: all 0.3s ease;
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 8px 22px rgba(22, 74, 139, 0.08);
+        }
+
+        .card h3 {
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .icon-pill {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(15, 60, 116, 0.12), rgba(36, 184, 181, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.02em;
+        }
+
+        .split-feature {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+        .split-feature .panel-text p { color: #45566d; margin-bottom: 14px; }
+        .check-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .check-list li {
+            padding: 10px 0 10px 32px;
             position: relative;
-            overflow: hidden;
+            color: #334155;
+            border-bottom: 1px solid var(--border);
         }
-
-        .feature-card::before {
-            content: '';
+        .check-list li:last-child { border-bottom: none; }
+        .check-list li::before {
+            content: '✓';
             position: absolute;
-            top: 0;
             left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(135deg, var(--accent-turquoise), var(--primary-blue));
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
+            color: var(--accent);
+            font-weight: 800;
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-strong);
+        .band-trust {
+            background: linear-gradient(180deg, #e8f2fb 0%, var(--bg) 100%);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
         }
-
-        .feature-card:hover::before {
-            transform: translateX(0);
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
         }
-
-        .feature-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--accent-turquoise), var(--primary-blue));
-            border-radius: 50%;
-            box-shadow: var(--shadow-light);
+        .trust-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
         }
+        .trust-card h3 { color: var(--primary); margin-bottom: 8px; font-size: 1.05rem; }
 
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary-blue);
-            font-weight: 700;
-        }
-
-        .feature-card p {
-            color: var(--medium-gray);
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        /* Call to Action Section */
-        .cta {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-navy) 100%);
-            color: var(--white);
-            padding: 6rem 0;
+        .quote-block {
+            max-width: 760px;
+            margin: 0 auto;
             text-align: center;
-            position: relative;
-            overflow: hidden;
+        }
+        .quote-block blockquote {
+            font-size: 1.2rem;
+            color: #334155;
+            font-style: italic;
+            line-height: 1.65;
+            margin: 0 0 16px;
+        }
+        .quote-block cite {
+            font-style: normal;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95rem;
         }
 
-
-
-        .cta-content {
-            position: relative;
-            z-index: 2;
+        .cta-band {
+            background: linear-gradient(120deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            padding: 48px 0;
+            text-align: center;
         }
+        .cta-band h2 { margin-bottom: 10px; font-size: 1.65rem; }
+        .cta-band p { color: #c8daf5; margin-bottom: 20px; max-width: 520px; margin-left: auto; margin-right: auto; }
+        .cta-band .btn-primary { margin: 4px; }
+        .cta-band .btn-outline { border-color: rgba(255,255,255,0.5); }
 
-        .cta h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-        }
-
-        .cta p {
-            font-size: 1.3rem;
-            margin-bottom: 2.5rem;
-            opacity: 0.9;
-        }
-
-        .cta .btn-primary {
-            background: linear-gradient(135deg, var(--accent-turquoise), #20c997);
-            color: var(--dark-navy);
-            font-weight: 500;
-        }
-
-        /* Footer */
         .footer {
-            background: var(--dark-navy);
-            color: var(--white);
+            background: var(--primary-dark);
+            color: #d6e5fc;
+            padding: 40px 0 28px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.2fr repeat(2, 1fr);
+            gap: 28px;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+        .footer h4 { color: #fff; font-size: 0.95rem; margin-bottom: 12px; }
+        .footer a {
+            color: #b8d4f8;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        .footer a:hover { color: #fff; text-decoration: underline; }
+        .footer-copy {
             text-align: center;
-            padding: 3rem 0;
-            position: relative;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            font-size: 0.88rem;
+            color: #9bb8e0;
         }
 
-        .footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary-blue), var(--accent-turquoise), var(--primary-blue));
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .nav {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem 0;
-            }
-
-            .nav-menu {
-                gap: 1.5rem;
-            }
-            
-            .hero {
-                padding: 4rem 0;
-            }
-            
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-                gap: 1rem;
-            }
-            
-            .btn {
-                width: 250px;
-            }
-
-            .features {
-                padding: 4rem 0;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .feature-card {
-                padding: 2rem 1.5rem;
-            }
-
-            .cta {
-                padding: 4rem 0;
-            }
-
-            .cta h2 {
-                font-size: 2rem;
-            }
-        }
-
-        /* Additional animations for better UX */
-        .feature-card {
-            opacity: 0;
-            transform: translateY(30px);
-            animation: slideUp 0.6s ease-out forwards;
-        }
-
-        .feature-card:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .feature-card:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes slideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Focus styles for accessibility */
-        .btn:focus,
-        .login-btn:focus,
-        .nav-menu a:focus {
-            outline: 2px solid var(--accent-turquoise);
-            outline-offset: 2px;
+        @media (max-width: 820px) {
+            .about-wrap, .contact-wrap { grid-template-columns: 1fr; }
+            .split-feature { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <nav class="nav">
-                <div class="logo">Health Center</div>
-                <ul class="nav-menu">
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-                <a href="#" class="login-btn">Login</a>
-            </nav>
-        </div>
-    </header>
+    {% include 'partials/public_nav.html.twig' %}
 
-    <!-- Hero Section -->
+    <div class="home-section-jump">
+        <div class="container">
+            <span style="color: var(--muted); font-weight: 600;">On this page:</span>
+            <a href="#services">Services</a>
+            <a href="#values">Values</a>
+            <a href="#how">How it works</a>
+            <a href="#highlights">Highlights</a>
+            <a href="#trust">Trust</a>
+            <a href="#voices">Stories</a>
+            <a href="#faq">FAQ</a>
+            <span style="color: var(--border); margin: 0 4px;" aria-hidden="true">|</span>
+            <span style="color: var(--muted); font-weight: 600;">More:</span>
+            <a href="{{ path('app_about') }}">About us</a>
+            <a href="{{ path('app_contact') }}">Contact us</a>
+        </div>
+    </div>
+
     <section class="hero">
         <div class="container">
-            <div class="hero-content">
-                <h1>Simple Appointment Scheduling</h1>
-                <p>Book appointments easily and manage your schedule in one place. Experience seamless healthcare management with our intuitive platform.</p>
-                <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary">Get Started</a>
-                    <a href="#features" class="btn btn-secondary">Learn More</a>
-                </div>
+            <h1>Professional care, easy appointment access</h1>
+            <p>
+                Manage appointments, stay informed, and connect with your clinic through one secure platform—built for patients, staff, and administrators.
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ path('app_login') }}" class="btn btn-primary">Log in</a>
+                <a href="{{ path('app_register') }}" class="btn btn-outline">Create an account</a>
+                <a href="{{ path('app_about') }}" class="btn btn-outline">About us</a>
+            </div>
+            <div class="hero-trust">
+                <span><strong>Secure access</strong> — role-based permissions</span>
+                <span><strong>Clinic-ready</strong> — scheduling &amp; records</span>
+                <span><strong>Always available</strong> — responsive on any device</span>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
+    <div class="stats-strip">
         <div class="container">
-            <h2 class="section-title">Book Now!</h2>
-            <p class="section-subtitle">Discover the powerful features that make appointment scheduling effortless and efficient</p>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">📅</div>
-                    <h3>Easy Booking</h3>
-                    <p>Quick book appointments online without calling. Our streamlined interface makes scheduling appointments a breeze, available 24/7.</p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Online booking access</div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>Mobile Friendly</h3>
-                    <p>Accessible through computers, tablets, and phones. Enjoy a seamless experience across all your devices with our responsive design.</p>
+                <div class="stat-item">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Encrypted sign-in &amp; sessions</div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">✉️</div>
-                    <h3>Smart Reminders</h3>
-                    <p>Automatic email reminders to help reduce missed appointments. Stay on top of your schedule with intelligent notification systems.</p>
+                <div class="stat-item">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Unified clinic workspace</div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Call to Action -->
-    <section class="cta">
+    <section id="services">
         <div class="container">
-            <div class="cta-content">
-                <h2>Ready to Get Started?</h2>
-                <p>Start managing your appointments better today and experience the difference</p>
-                <a href="#" class="btn btn-primary">Create Account</a>
+            <h2 class="section-title">Essential services</h2>
+            <p class="section-subtitle">Everything your clinic needs for day-to-day scheduling and patient communication—without unnecessary complexity.</p>
+            <div class="cards">
+                <article class="card">
+                    <div class="icon-pill" aria-hidden="true">01</div>
+                    <h3>Appointment booking</h3>
+                    <p>Request and manage visits online with clear availability and fewer scheduling conflicts.</p>
+                </article>
+                <article class="card">
+                    <div class="icon-pill" aria-hidden="true">02</div>
+                    <h3>Doctor schedules</h3>
+                    <p>See who is available and align patient requests with real clinic capacity.</p>
+                </article>
+                <article class="card">
+                    <div class="icon-pill" aria-hidden="true">A3</div>
+                    <h3>Patient-friendly access</h3>
+                    <p>A responsive interface that works on desktop, tablet, and phone.</p>
+                </article>
+                <article class="card">
+                    <div class="icon-pill" aria-hidden="true">04</div>
+                    <h3>Reminders &amp; follow-up</h3>
+                    <p>Reduce no-shows with timely communication and structured follow-up support.</p>
+                </article>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
+    <section id="values" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+        <div class="container">
+            <h2 class="section-title">What we stand for</h2>
+            <p class="section-subtitle">Our platform is shaped around clarity, safety, and respect for both patients and care teams.</p>
+            <div class="cards">
+                <article class="card">
+                    <h3>Patient first</h3>
+                    <p>Simple flows and plain language so scheduling does not get in the way of care.</p>
+                </article>
+                <article class="card">
+                    <h3>Operational clarity</h3>
+                    <p>Staff see what they need to act; patients see what they are allowed to view—no ambiguity.</p>
+                </article>
+                <article class="card">
+                    <h3>Dependable technology</h3>
+                    <p>Thoughtful defaults, audit-friendly activity, and APIs when you need to integrate.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="how">
+        <div class="container">
+            <h2 class="section-title">How it works</h2>
+            <p class="section-subtitle">From first visit to ongoing care, the path is straightforward for everyone involved.</p>
+            <div class="split-feature">
+                <div class="panel-text">
+                    <p><strong>Patients</strong> register, verify their email, and sign in to view appointments and updates.</p>
+                    <p><strong>Staff and administrators</strong> use elevated roles to manage schedules, services, and clinic records.</p>
+                    <p><strong>Everyone</strong> benefits from a single source of truth and consistent workflows.</p>
+                </div>
+                <div>
+                    <ul class="check-list">
+                        <li>Create a secure account with email verification</li>
+                        <li>Log in with password or Google (where enabled)</li>
+                        <li>Book and review appointments in one place</li>
+                        <li>Rely on role-based access for sensitive data</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="highlights">
+        <div class="container">
+            <h2 class="section-title">Why clinics choose us</h2>
+            <p class="section-subtitle">Professional design, predictable workflows, and controls that match real clinic responsibilities.</p>
+            <div class="cards">
+                <article class="card">
+                    <h3>Role-based permissions</h3>
+                    <p>Patients, staff, and admins each get appropriate access—reducing mistakes and misuse.</p>
+                </article>
+                <article class="card">
+                    <h3>Activity awareness</h3>
+                    <p>Key actions can be tracked to support accountability and smoother handoffs.</p>
+                </article>
+                <article class="card">
+                    <h3>API-ready</h3>
+                    <p>Structured endpoints for testing and controlled integrations when you are ready.</p>
+                </article>
+                <article class="card">
+                    <h3>Readable on small screens</h3>
+                    <p>Layouts and spacing stay usable for busy staff checking in from mobile devices.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="trust" class="band-trust">
+        <div class="container">
+            <h2 class="section-title">Security &amp; trust</h2>
+            <p class="section-subtitle">Healthcare software should feel dependable. We prioritize sensible defaults and clear boundaries.</p>
+            <div class="trust-grid">
+                <div class="trust-card">
+                    <h3>Authentication</h3>
+                    <p style="color: #45566d; font-size: 0.95rem;">Password-based login with optional Google OAuth where configured, plus email verification for new accounts.</p>
+                </div>
+                <div class="trust-card">
+                    <h3>Data handling</h3>
+                    <p style="color: #45566d; font-size: 0.95rem;">Sensitive operations are limited to authorized roles; patients get view-appropriate access only.</p>
+                </div>
+                <div class="trust-card">
+                    <h3>Communication</h3>
+                    <p style="color: #45566d; font-size: 0.95rem;">Transactional email can be routed through providers such as Brevo; contact inquiries go to your configured inbox.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="voices" style="padding-top: 48px;">
+        <div class="container">
+            <h2 class="section-title">From our clinic partners</h2>
+            <p class="section-subtitle">Feedback from teams who value structure and calm operations.</p>
+            <div class="card quote-block" style="box-shadow: var(--shadow); padding: 32px 28px;">
+                <blockquote>
+                    “We needed scheduling that patients could trust and staff could manage without friction. This platform keeps everyone aligned without overwhelming the front desk.”
+                </blockquote>
+                <cite>— Operations lead, primary care network</cite>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq">
+        <div class="container">
+            <h2 class="section-title">FAQ</h2>
+            <p class="section-subtitle">Quick answers for patients and clinic staff.</p>
+            <div class="cards">
+                <article class="card">
+                    <h3>Do I need an account?</h3>
+                    <p>Yes. Accounts protect patient and clinic data and unlock appointment features tied to your role.</p>
+                </article>
+                <article class="card">
+                    <h3>Can patients edit medical records?</h3>
+                    <p>No. Patients have appropriate view access; updates are handled by authorized staff and administrators.</p>
+                </article>
+                <article class="card">
+                    <h3>How do I reach the clinic?</h3>
+                    <p>Use the contact page to send a message, or the email shown there if your administrator has published one.</p>
+                </article>
+            </div>
+
+            <div style="margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+                <a href="{{ path('app_contact') }}" class="btn btn-primary">Contact us</a>
+                <a href="{{ path('app_about') }}" class="btn btn-outline-solid">About us</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-band">
+        <div class="container">
+            <h2>Ready to streamline your clinic?</h2>
+            <p>Log in if you already have access, or register to get started with a verified email.</p>
+            <div>
+                <a href="{{ path('app_register') }}" class="btn btn-primary">Register</a>
+                <a href="{{ path('app_login') }}" class="btn btn-outline">Log in</a>
+            </div>
+        </div>
+    </section>
+
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 BookEasy - Simple Appointment Scheduling. Designed with care for better healthcare management.</p>
+            <div class="footer-grid">
+                <div>
+                    <h4>Health Center</h4>
+                    <p style="color: #9bb8e0; font-size: 0.9rem; line-height: 1.55;">
+                        Clinic scheduling and patient access in one professional workspace.
+                    </p>
+                </div>
+                <div>
+                    <h4>Explore</h4>
+                    <a href="{{ path('app_home') }}">Home</a>
+                    <a href="{{ path('app_about') }}">About us</a>
+                    <a href="{{ path('app_contact') }}">Contact us</a>
+                </div>
+                <div>
+                    <h4>Account</h4>
+                    <a href="{{ path('app_login') }}">Log in</a>
+                    <a href="{{ path('app_register') }}">Register</a>
+                </div>
+            </div>
+            <div class="footer-copy">
+                <p>&copy; {{ 'now'|date('Y') }} Health Center. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 </body>

@@ -40,24 +40,24 @@ final class UserController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         if ($request->isMethod('POST')) {
-            $username = $request->request->get('username');
+            $email = $request->request->get('email');
             $roles = $request->request->get('roles', []);
-            
-            if ($username) {
-                $user->setUsername($username);
+
+            if ($email) {
+                $user->setEmail((string) $email);
             }
             if (is_array($roles)) {
                 $user->setRoles($roles);
             }
-            
+
             $entityManager->flush();
-            
-            $targetData = sprintf('User ID: %d, Username: %s, Roles: %s', 
+
+            $targetData = sprintf('User ID: %d, Email: %s, Roles: %s',
                 $user->getId(),
-                $user->getUsername(),
+                $user->getEmail(),
                 implode(', ', $user->getRoles())
             );
-            $logger->log('user_updated', sprintf('User #%d updated (%s)', $user->getId(), $user->getUsername()), $targetData);
+            $logger->log('user_updated', sprintf('User #%d updated (%s)', $user->getId(), $user->getEmail() ?? ''), $targetData);
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -74,11 +74,11 @@ final class UserController extends AbstractController
 
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
             $userId = $user->getId();
-            $username = $user->getUsername();
-            $targetData = sprintf('User ID: %d, Username: %s', $userId, $username);
+            $email = $user->getEmail();
+            $targetData = sprintf('User ID: %d, Email: %s', $userId, $email);
             $entityManager->remove($user);
             $entityManager->flush();
-            $logger->log('user_deleted', sprintf('User #%d deleted (%s)', $userId, $username), $targetData);
+            $logger->log('user_deleted', sprintf('User #%d deleted (%s)', $userId, $email ?? ''), $targetData);
         }
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);

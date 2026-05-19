@@ -26,6 +26,8 @@ final class DoctorController extends AbstractController
     #[Route('/new', name: 'app_doctor_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyCrudForRegularUsers();
+
         $doctor = new Doctor();
         $form = $this->createForm(DoctorType::class, $doctor);
         $form->handleRequest($request);
@@ -62,6 +64,8 @@ final class DoctorController extends AbstractController
     #[Route('/{id}/edit', name: 'app_doctor_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Doctor $doctor, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyCrudForRegularUsers();
+
         $form = $this->createForm(DoctorType::class, $doctor);
         $form->handleRequest($request);
 
@@ -88,6 +92,8 @@ final class DoctorController extends AbstractController
     #[Route('/{id}', name: 'app_doctor_delete', methods: ['POST'])]
     public function delete(Request $request, Doctor $doctor, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyCrudForRegularUsers();
+
         if ($this->isCsrfTokenValid('delete'.$doctor->getId(), $request->getPayload()->getString('_token'))) {
             $doctorId = $doctor->getId();
             $doctorName = $doctor->getName();
@@ -98,5 +104,12 @@ final class DoctorController extends AbstractController
         }
 
         return $this->redirectToRoute('app_doctor_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function denyCrudForRegularUsers(): void
+    {
+        if (!$this->isGranted('ROLE_STAFF') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('You only have view access.');
+        }
     }
 }

@@ -1,150 +1,291 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Home — Health Center{% endblock %}
 
 {% block body %}
     <style>
-        :root {
-            --primary-blue: #000080;
-            --accent-turquoise: #40E0D0;
-            --light-gray: #f8f9fa;
-            --text-dark: #2c3e50;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        .dash-wrap {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 1.5rem;
+        .dash-hero {
+            background: linear-gradient(135deg, #0f3c74 0%, #0b2a52 55%, #124a8f 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 1.75rem 1.5rem 1.5rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 12px 32px rgba(15, 60, 116, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .dash-hero::after {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 45%;
+            height: 180%;
+            background: radial-gradient(circle, rgba(36, 184, 181, 0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .dash-hero h1 {
+            margin: 0 0 0.35rem;
+            font-size: clamp(1.35rem, 2.5vw, 1.65rem);
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 1;
+        }
+        .dash-hero p {
+            margin: 0;
+            color: #c8daf5;
+            font-size: 0.92rem;
+            position: relative;
+            z-index: 1;
+        }
+        .dash-hero .role-chip {
+            display: inline-block;
+            margin-top: 0.75rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(36, 184, 181, 0.25);
+            border: 1px solid rgba(36, 184, 181, 0.45);
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #a5f0ee;
         }
 
-        .cards {
+        .dash-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.75rem;
         }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.2rem 1.4rem;
-            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
-            border: 1px solid rgba(0,0,0,0.04);
+        .stat-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 1.15rem 1.2rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 18px rgba(15, 60, 116, 0.06);
+            position: relative;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
-
-        .card h3 {
-            margin: 0;
-            color: var(--primary-blue);
-            font-size: 1rem;
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(15, 60, 116, 0.1);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 1rem;
+            right: 1rem;
+            height: 3px;
+            border-radius: 0 0 4px 4px;
+            background: linear-gradient(90deg, #24b8b5, #0f3c74);
+        }
+        .stat-card .label {
+            font-size: 0.78rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 0.35rem;
+        }
+        .stat-card .value {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
         }
 
-        .card .value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-top: 0.3rem;
-        }
-
-        .section {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
-            border: 1px solid rgba(0,0,0,0.04);
+        .dash-panel {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 18px rgba(15, 60, 116, 0.06);
             margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .dash-panel-head {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .dash-panel-head h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f3c74;
         }
 
-        table {
+        .status-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            padding: 1.25rem;
+        }
+        .status-pill {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            text-align: center;
+        }
+        .status-pill .name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+        .status-pill .num {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #0f3c74;
+        }
+
+        .dash-table-wrap {
+            padding: 0 1.25rem 1.25rem;
+            overflow-x: auto;
+        }
+        .dash-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
+            font-size: 0.88rem;
         }
-
-        th, td {
-            padding: 0.8rem;
-            border-bottom: 1px solid var(--light-gray);
+        .dash-table th {
             text-align: left;
-        }
-
-        thead th {
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
-            color: white;
-        }
-
-        tbody tr:hover {
-            background: rgba(64, 224, 208, 0.08);
-        }
-
-        .status {
+            padding: 0.65rem 0.75rem;
+            background: #f1f5f9;
+            color: #475569;
             font-weight: 600;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .dash-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+        .dash-table tbody tr:hover td {
+            background: #f8fafc;
+        }
+        .badge-status {
+            display: inline-block;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .badge-generic { background: #f1f5f9; color: #475569; }
+        .badge-scheduled, .badge-confirmed { background: #dbeafe; color: #1e40af; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-finished { background: #d1fae5; color: #065f46; }
+        .badge-cancelled { background: #fee2e2; color: #991b1b; }
+
+        .empty-state {
+            padding: 2rem 1.25rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.92rem;
         }
     </style>
 
-    <h1>Dashboard</h1>
+    <div class="dash-wrap">
+        <div class="dash-hero">
+            <h1>Welcome back{% if app.user %}<span style="font-weight:500;opacity:.9">, {{ app.user.userIdentifier }}</span>{% endif %}</h1>
+            <p>Overview of appointments, capacity, and what is coming up next at the clinic.</p>
+            {% if app.user %}
+                {% set roles = app.user.roles %}
+                <span class="role-chip">
+                    {% if 'ROLE_ADMIN' in roles %}Administrator{% elseif 'ROLE_STAFF' in roles %}Staff{% else %}Patient{% endif %}
+                </span>
+            {% endif %}
+        </div>
 
-    <div class="cards">
-        <div class="card">
-            <h3>Total Appointments</h3>
-            <div class="value">{{ totalAppointments }}</div>
+        <div class="dash-stats">
+            <div class="stat-card">
+                <div class="label">Appointments</div>
+                <div class="value">{{ totalAppointments }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Doctors</div>
+                <div class="value">{{ totalDoctors }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Services</div>
+                <div class="value">{{ totalServices }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Payments</div>
+                <div class="value">{{ totalPayments }}</div>
+            </div>
         </div>
-        <div class="card">
-            <h3>Doctors</h3>
-            <div class="value">{{ totalDoctors }}</div>
-        </div>
-        <div class="card">
-            <h3>Services</h3>
-            <div class="value">{{ totalServices }}</div>
-        </div>
-        <div class="card">
-            <h3>Payments</h3>
-            <div class="value">{{ totalPayments }}</div>
-        </div>
-    </div>
 
-    <div class="section">
-        <h3>Appointments by Status</h3>
-        <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-            {% for status in trackedStatuses %}
-                <div class="card">
-                    <h3>{{ status|capitalize }}</h3>
-                    <div class="value">{{ statusCounts[status]|default(0) }}</div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div class="section">
-        <h3>Upcoming Appointments</h3>
-        {% if upcoming is empty %}
-            <p>No upcoming appointments.</p>
-        {% else %}
-            <table>
-                <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Patient</th>
-                    <th>Doctor</th>
-                    <th>Service</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for appt in upcoming %}
-                    <tr>
-                        <td>{{ appt.appointmentDate|date('Y-m-d H:i') }}</td>
-                        <td>{{ appt.patientName }}</td>
-                        <td>{{ appt.doctor ? appt.doctor.name : '—' }}</td>
-                        <td>{{ appt.service ? appt.service.name : '—' }}</td>
-                        <td class="status">{{ appt.status }}</td>
-                    </tr>
+        <div class="dash-panel">
+            <div class="dash-panel-head">
+                <h2>Appointments by status</h2>
+            </div>
+            <div class="status-mini-grid">
+                {% for status in trackedStatuses %}
+                    <div class="status-pill">
+                        <div class="name">{{ status }}</div>
+                        <div class="num">{{ statusCounts[status]|default(0) }}</div>
+                    </div>
                 {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+            </div>
+        </div>
+
+        <div class="dash-panel">
+            <div class="dash-panel-head">
+                <h2>Upcoming appointments</h2>
+            </div>
+            {% if upcoming is empty %}
+                <div class="empty-state">No upcoming appointments from today onward.</div>
+            {% else %}
+                <div class="dash-table-wrap">
+                    <table class="dash-table">
+                        <thead>
+                            <tr>
+                                <th>Date &amp; time</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Service</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in upcoming %}
+                                <tr>
+                                    <td>{{ appt.appointmentDate|date('M j, Y · g:i A') }}</td>
+                                    <td>{{ appt.patientName }}</td>
+                                    <td>{{ appt.doctor ? appt.doctor.name : '—' }}</td>
+                                    <td>{{ appt.service ? appt.service.name : '—' }}</td>
+                                    <td>
+                                        {% set s = appt.status|default('')|lower|replace({' ': '-'}) %}
+                                        <span class="badge-status {% if s in ['scheduled', 'confirmed', 'pending', 'finished', 'cancelled'] %}badge-{{ s }}{% else %}badge-generic{% endif %}">{{ appt.status }}</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
-

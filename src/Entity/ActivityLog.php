@@ -2,33 +2,58 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\ActivityLogRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Delete()
+    ],
+    normalizationContext: ['groups' => ['activity_log:read']],
+    denormalizationContext: ['groups' => ['activity_log:write']]
+)]
 #[ORM\Entity(repositoryClass: ActivityLogRepository::class)]
 class ActivityLog
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['activity_log:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 120)]
+    #[Groups(['activity_log:read', 'activity_log:write'])]
     private ?string $action = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['activity_log:read', 'activity_log:write'])]
     private ?string $details = null;
 
     #[ORM\Column(length: 180, nullable: true)]
+    #[Groups(['activity_log:read', 'activity_log:write'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Groups(['activity_log:read', 'activity_log:write'])]
     private ?string $role = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['activity_log:read', 'activity_log:write'])]
     private ?string $targetData = null;
 
     #[ORM\Column]
+    #[Groups(['activity_log:read', 'activity_log:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     public function __construct()

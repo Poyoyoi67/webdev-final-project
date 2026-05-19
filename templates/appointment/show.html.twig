@@ -3,6 +3,7 @@
 {% block title %}Appointment Details{% endblock %}
 
 {% block body %}
+    {% set can_manage = is_granted('ROLE_STAFF') or is_granted('ROLE_ADMIN') %}
     <style>
         :root {
             --primary-blue: #000080;
@@ -158,14 +159,16 @@
 
         <div class="page-actions">
             <a href="{{ path('app_appointment_index') }}" class="btn btn-secondary">⬅ Back to list</a>
-            <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}" class="btn btn-primary">✏ Edit</a>
+            {% if can_manage %}
+                <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}" class="btn btn-primary">✏ Edit</a>
 
-            <form id="deleteForm" method="post"
-                  action="{{ path('app_appointment_delete', {'id': appointment.id}) }}"
-                  style="display:inline;">
-                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ appointment.id) }}">
-                <button type="button" class="btn btn-danger" onclick="confirmDelete()">🗑 Delete</button>
-            </form>
+                <form id="deleteForm" method="post"
+                      action="{{ path('app_appointment_delete', {'id': appointment.id}) }}"
+                      style="display:inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ appointment.id) }}">
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">🗑 Delete</button>
+                </form>
+            {% endif %}
         </div>
     </div>
 

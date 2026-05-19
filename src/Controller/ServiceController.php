@@ -27,6 +27,8 @@ final class ServiceController extends AbstractController
     #[Route('/new', name: 'app_service_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+     $this->denyCrudForRegularUsers();
+
      $service = new Service();
      $form = $this->createForm(ServiceType::class, $service);
      $form->handleRequest($request);
@@ -62,6 +64,8 @@ final class ServiceController extends AbstractController
     #[Route('/{id}/edit', name: 'app_service_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Service $service, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyCrudForRegularUsers();
+
         $form = $this->createForm(ServiceType::class, $service);
         $form->handleRequest($request);
 
@@ -87,6 +91,8 @@ final class ServiceController extends AbstractController
     #[Route('/{id}', name: 'app_service_delete', methods: ['POST'])]
     public function delete(Request $request, Service $service, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
     {
+        $this->denyCrudForRegularUsers();
+
         if ($this->isCsrfTokenValid('delete'.$service->getId(), $request->getPayload()->getString('_token'))) {
             $serviceId = $service->getId();
             $serviceName = $service->getName();
@@ -100,4 +106,10 @@ final class ServiceController extends AbstractController
     }
 
 
+    private function denyCrudForRegularUsers(): void
+    {
+        if (!$this->isGranted('ROLE_STAFF') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('You only have view access.');
+        }
+    }
 }

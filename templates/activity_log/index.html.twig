@@ -1,98 +1,217 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Activity Log{% endblock %}
+{% block title %}Activity log — Health Center{% endblock %}
+
+{% block header %}Audit trail{% endblock %}
 
 {% block body %}
     <style>
-        :root {
-            --primary-blue: #000080;
-            --accent-turquoise: #40E0D0;
-            --light-gray: #f8f9fa;
-            --text-dark: #2c3e50;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        h1 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .admin-page {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            max-width: 1280px;
+            margin: 0 auto;
         }
-
-        table.log-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 8px 24px rgba(3, 3, 63, 0.12);
-            border-radius: 12px;
+        .admin-hero {
+            background: linear-gradient(135deg, #0f3c74 0%, #0b2a52 55%, #124a8f 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 12px 32px rgba(15, 60, 116, 0.22);
+            position: relative;
             overflow: hidden;
         }
-
-        .log-table thead th {
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
-            color: white;
-            padding: 0.8rem;
-            text-align: left;
+        .admin-hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -12%;
+            width: 45%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(36, 184, 181, 0.2) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .admin-hero h1 {
+            margin: 0 0 0.35rem;
+            font-size: clamp(1.25rem, 2vw, 1.5rem);
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        .admin-hero p {
+            margin: 0;
+            color: #c8e4ff;
             font-size: 0.9rem;
+            max-width: 40rem;
+            line-height: 1.45;
+            position: relative;
+            z-index: 1;
         }
 
-        .log-table tbody td {
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--light-gray);
-            color: var(--text-dark);
-            font-size: 0.85rem;
+        .stat-chip {
+            display: inline-flex;
+            margin-top: 0.75rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.75rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
         }
 
-        .log-table tbody td:last-child {
-            max-width: 300px;
-            word-wrap: break-word;
+        .table-panel {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(15, 60, 116, 0.07);
+            overflow: hidden;
+        }
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84rem;
+        }
+        .data-table thead th {
+            text-align: left;
+            padding: 0.85rem 1rem;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        .data-table tbody td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: top;
+        }
+        .data-table tbody tr:hover td {
+            background: #f8fafc;
+        }
+        .data-table .mono {
+            font-variant-numeric: tabular-nums;
+            color: #64748b;
             font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .data-table .user-cell {
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .data-table .detail-cell {
+            max-width: 280px;
+            line-height: 1.45;
+        }
+        .data-table .meta-cell {
+            max-width: 220px;
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.4;
         }
 
-        .log-table tbody tr:hover td {
-            background: rgba(64, 224, 208, 0.08);
+        .badge-action {
+            display: inline-block;
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: lowercase;
+            letter-spacing: 0.02em;
         }
+        .log-action--login { background: #d1fae5; color: #065f46; }
+        .log-action--logout { background: #f1f5f9; color: #475569; }
+        .log-action--update { background: #dbeafe; color: #1e40af; }
+        .log-action--delete { background: #fee2e2; color: #991b1b; }
+        .log-action--default { background: #e0e7ff; color: #3730a3; }
 
-        .empty {
+        .badge-role {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .role-admin { background: #fef3c7; color: #92400e; }
+        .role-staff { background: #dbeafe; color: #1e40af; }
+        .role-user { background: #f1f5f9; color: #475569; }
+
+        .empty-state {
             text-align: center;
-            color: #6b7280;
-            margin-top: 1rem;
+            padding: 2.5rem 1.5rem;
+            color: #64748b;
+            font-size: 0.95rem;
         }
     </style>
 
-    <h1>Activity Log</h1>
+    <div class="admin-page">
+        <div class="admin-hero">
+            <h1>Activity log</h1>
+            <p>Sign-ins, sign-outs, and admin actions. New entries record the signed-in account; older rows may show a dash if they were logged before usernames were stored.</p>
+            {% if logs is not empty %}
+                <span class="stat-chip">{{ logs|length }} entr{{ logs|length == 1 ? 'y' : 'ies' }} loaded</span>
+            {% endif %}
+        </div>
 
-    {% if logs is empty %}
-        <p class="empty">No activity recorded yet.</p>
-    {% else %}
-        <table class="log-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Timestamp</th>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Action</th>
-                    <th>Details</th>
-                    <th>Target Data</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for log in logs %}
-                <tr>
-                    <td>{{ log.id }}</td>
-                    <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
-                    <td>{{ log.username ?? 'Anonymous' }}</td>
-                    <td>{{ log.role ?? 'N/A' }}</td>
-                    <td>{{ log.action }}</td>
-                    <td>{{ log.details ?? 'N/A' }}</td>
-                    <td>{{ log.targetData ?? 'N/A' }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+        {% if logs is empty %}
+            <div class="table-panel">
+                <div class="empty-state">No activity recorded yet.</div>
+            </div>
+        {% else %}
+            <div class="table-panel">
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>When</th>
+                                <th>Account</th>
+                                <th>Role</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                                <th>Extra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for log in logs %}
+                            {% set action_key = log.action|default('') %}
+                            {% set action_class = 'log-action--default' %}
+                            {% if action_key ends with '_login' %}{% set action_class = 'log-action--login' %}
+                            {% elseif action_key ends with '_logout' %}{% set action_class = 'log-action--logout' %}
+                            {% elseif action_key ends with '_updated' or action_key ends with '_recorded' %}{% set action_class = 'log-action--update' %}
+                            {% elseif action_key ends with '_deleted' %}{% set action_class = 'log-action--delete' %}
+                            {% endif %}
+                            {% set role_raw = log.role ?? '' %}
+                            {% set role_class = 'role-user' %}
+                            {% if 'ADMIN' in role_raw %}{% set role_class = 'role-admin' %}
+                            {% elseif 'STAFF' in role_raw %}{% set role_class = 'role-staff' %}
+                            {% endif %}
+                            <tr>
+                                <td class="mono">#{{ log.id }}</td>
+                                <td class="mono">{{ log.createdAt|date('M j, Y') }}<br><span style="opacity:.85">{{ log.createdAt|date('g:i:s A') }}</span></td>
+                                <td class="user-cell">{{ log.username ? log.username : '—' }}</td>
+                                <td><span class="badge-role {{ role_class }}">{{ log.role ?? '—' }}</span></td>
+                                <td><span class="badge-action {{ action_class }}">{{ log.action }}</span></td>
+                                <td class="detail-cell">{{ log.details ?? '—' }}</td>
+                                <td class="meta-cell">{{ log.targetData ?? '—' }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
-
-

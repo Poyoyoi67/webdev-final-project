@@ -1,0 +1,128 @@
+{# Shared public site navigation + layout CSS (include once per page). #}
+{% set route = app.request.attributes.get('_route') %}
+<style>
+    .public-header {
+        background: linear-gradient(135deg, #0f3c74, #0b2a52);
+        color: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+    .public-nav-wrap .container { width: min(1100px, 92%); margin: 0 auto; }
+    .public-nav {
+        display: grid;
+        grid-template-columns: minmax(120px, auto) 1fr auto;
+        align-items: center;
+        gap: clamp(8px, 2vw, 20px);
+        min-height: 56px;
+        padding: 10px 0;
+    }
+    .public-logo {
+        font-weight: 800;
+        font-size: 1.15rem;
+        letter-spacing: 0.02em;
+        color: #fff;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    .public-logo:hover { color: #e8f2ff; }
+    .public-nav-links {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(12px, 3vw, 28px);
+        flex-wrap: nowrap;
+        min-width: 0;
+    }
+    .public-nav-link {
+        color: #e8f2ff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        padding: 8px 2px;
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    .public-nav-link:hover { color: #fff; }
+    .public-nav-link.is-active {
+        text-decoration: underline;
+        text-underline-offset: 6px;
+        text-decoration-thickness: 2px;
+        border-bottom-color: #40e0d0;
+    }
+    .public-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+    .public-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-decoration: none;
+        white-space: nowrap;
+        border: 1px solid transparent;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    .public-btn:hover { transform: translateY(-1px); }
+    .public-btn-outline {
+        border-color: #c9defa;
+        color: #fff;
+        background: transparent;
+    }
+    .public-btn-solid {
+        background: #24b8b5;
+        color: #073033;
+        border-color: #24b8b5;
+    }
+    @media (max-width: 720px) {
+        .public-nav {
+            grid-template-columns: 1fr;
+            justify-items: center;
+            text-align: center;
+        }
+        .public-nav-links { flex-wrap: wrap; justify-content: center; }
+        .public-nav-actions { justify-content: center; }
+    }
+</style>
+<header class="public-header">
+    <div class="public-nav-wrap">
+        <div class="container">
+            <nav class="public-nav" aria-label="Main">
+                <a href="{{ path('app_home') }}" class="public-logo">Health Center</a>
+
+                <ul class="public-nav-links">
+                    <li>
+                        <a href="{{ path('app_home') }}" class="public-nav-link {{ route == 'app_home' or route == 'app_page' ? 'is-active' : '' }}">Home</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_about') }}" class="public-nav-link {{ route == 'app_about' ? 'is-active' : '' }}">About us</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_contact') }}" class="public-nav-link {{ route == 'app_contact' ? 'is-active' : '' }}">Contact us</a>
+                    </li>
+                </ul>
+
+                <div class="public-nav-actions">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <a href="{{ path('app_account_home') }}" class="public-btn public-btn-solid">My account</a>
+                        <a href="{{ path('app_logout') }}" class="public-btn public-btn-outline">Logout</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="public-btn public-btn-outline">Login</a>
+                        <a href="{{ path('app_register') }}" class="public-btn public-btn-solid">Register</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>

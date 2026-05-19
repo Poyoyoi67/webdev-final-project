@@ -1,139 +1,220 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}About Us{% endblock %}
-
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Health Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #000080;
-            --accent-turquoise: #40E0D0;
-            --dark-navy: #03033f;
-            --white: #ffffff;
-            --text-dark: #2c3e50;
-            --shadow-medium: 0 4px 20px rgba(0, 0, 128, 0.15);
+            --primary: #0f3c74;
+            --primary-dark: #0b2a52;
+            --accent: #24b8b5;
+            --ink: #111827;
+            --muted: #6b7280;
+            --surface: #ffffff;
+            --bg: #f4f8fc;
+            --border: #dbe7f3;
+            --shadow: 0 18px 40px rgba(15, 60, 116, 0.16);
         }
-
+        * { box-sizing: border-box; }
         body {
-            background: url('{{ asset("images/Background.jpg") }}') no-repeat center center fixed;
-            background-size: cover;
-            background-attachment: fixed;
-            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
         }
-
-        .overlay {
-            background: rgba(255, 255, 255, 0.5);
-            min-height: 100vh;
-            padding: 3rem 1rem;
-            display: flex;
-            justify-content: center;
+        .container { width: min(1100px, 92%); margin: 0 auto; }
+        main { padding: 56px 0; }
+        section { margin-bottom: 18px; }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 26px;
+        }
+        h1 {
+            margin: 0 0 8px;
+            color: var(--primary);
+            font-size: clamp(1.8rem, 3.6vw, 2.4rem);
+        }
+        h2 {
+            margin: 0 0 10px;
+            color: var(--primary);
+            font-size: 1.35rem;
+        }
+        p { margin: 0 0 14px; color: #334155; }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .pill {
+            display: inline-flex;
             align-items: center;
-        }
-
-        .about-container {
-            max-width: 900px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.75);
-            border-radius: 16px;
-            box-shadow: var(--shadow-medium);
-            padding: 2.5rem 3rem;
-            line-height: 1.7;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .about-container h1 {
-            text-align: center;
-            font-weight: 700;
-            font-size: 2.2rem;
-            color: var(--primary-blue);
-            margin-bottom: 1.8rem;
-        }
-
-        .about-container p {
-            font-size: 1.05rem;
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-        }
-
-        .about-container .highlight {
-            color: var(--primary-blue);
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #f9fcff;
+            color: #0f172a;
             font-weight: 600;
+            margin: 6px 6px 0 0;
         }
-
-        .mission-vision-section {
-            margin-top: 2.5rem;
-            text-align: center;
+        .team-grid, .doctor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
         }
-
-        .mission-vision-section h2 {
-            color: var(--primary-blue);
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 0.8rem;
+        .person {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
         }
-
-        .mission-vision-section p {
-            color: var(--text-dark);
-            font-size: 1.05rem;
-            background: rgba(255, 255, 255, 0.6);
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: var(--shadow-medium);
-            line-height: 1.8;
-            max-width: 750px;
-            margin: 0.8rem auto 2rem;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .person-photo {
+            margin: -4px -4px 14px -4px;
+            border-radius: 14px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #eef4fb, #f9fcff);
+            border: 1px solid var(--border);
         }
-
-        .divider {
-            height: 2px;
-            width: 80px;
-            background: var(--accent-turquoise);
-            margin: 1rem auto 2rem;
-            border-radius: 2px;
+        .person-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
-
-        @media (max-width: 768px) {
-            .about-container {
-                padding: 1.5rem;
-            }
+        .person .name { font-weight: 800; color: #0f172a; }
+        .person .role { color: var(--muted); font-weight: 600; }
+        .person .meta { margin-top: 8px; color: #334155; font-size: 0.95rem; flex: 1; }
+        .banner {
+            border-radius: 18px;
+            padding: 22px;
+            color: #e8f2ff;
+            background: linear-gradient(120deg, rgba(15, 60, 116, 0.95), rgba(11, 42, 82, 0.88)), url('/images/Background.jpg');
+            background-size: cover;
+            background-position: center;
+            box-shadow: var(--shadow);
+        }
+        .banner h1 { color: #fff; margin-bottom: 10px; }
+        .banner p { color: #d6e5fb; max-width: 820px; }
+        @media (max-width: 860px) {
+            .grid-2 { grid-template-columns: 1fr; }
         }
     </style>
+</head>
+<body>
+{% include 'partials/public_nav.html.twig' %}
 
-    <div class="overlay">
-        <div class="about-container">
-            <h1>About Our Health Care System</h1>
-
+<main>
+    <div class="container">
+        <section class="banner">
+            <h1>About Health Center</h1>
             <p>
-                Welcome to <span class="highlight">Health Care System</span> — a platform dedicated to improving access to
-                quality healthcare services. We aim to make appointment scheduling, service management, and
-                patient communication easier and more efficient for both patients and medical staff.
+                We provide a secure, clinic‑ready platform that improves scheduling, communication, and record handling—helping care teams deliver faster and more consistent patient service.
             </p>
+        </section>
 
+        <section class="card">
+            <h2>What “Health Care” Means Here</h2>
             <p>
-                Our mission is to create a seamless healthcare experience by integrating technology with compassion.
-                Through this system, we strive to support clinics and health professionals in delivering care that’s
-                organized, timely, and effective.
+                Our system is designed around the core clinic workflow: booking and managing appointments, coordinating schedules, tracking services provided, and supporting timely follow‑ups.
+                It promotes a reliable patient experience while reducing administrative overhead.
             </p>
-
-            <div class="mission-vision-section">
-                <h2>Our Mission</h2>
-                <div class="divider"></div>
-                <p>
-                    To offer patient-centered, compassionate, and easily accessible primary care that encourages wellness,
-                    prevention, and lifetime health, enabling people and families to have happier, healthier lives.
-                </p>
-
-                <h2>Our Vision</h2>
-                <div class="divider"></div>
-                <p>
-                    A community where every person has access to quality primary care, preventive services, and holistic
-                    support, fostering a healthier and more resilient society.
-                </p>
+            <div>
+                <span class="pill">Secure access</span>
+                <span class="pill">Efficient scheduling</span>
+                <span class="pill">Clinic-ready workflow</span>
+                <span class="pill">Mobile-friendly</span>
             </div>
-        </div>
+        </section>
+
+        <section class="card">
+            <div class="grid-2">
+                <div>
+                    <h2>Mission</h2>
+                    <p>
+                        To deliver patient‑centered care through practical digital tools that make clinic processes faster, clearer, and more dependable.
+                    </p>
+                </div>
+                <div>
+                    <h2>Vision</h2>
+                    <p>
+                        A community where every patient can access quality primary care with well‑organized services and seamless coordination.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Meet the Team</h2>
+            <p>People behind the platform and clinic operations.</p>
+            <div class="team-grid">
+                <div class="person">
+                    <div class="person-photo">
+                        <img src="/images/teammie.jpg" alt="Portrait placeholder for Clinic Administrator" width="280" height="280" loading="lazy">
+                    </div>
+                    <div class="name">Clinic Administrator</div>
+                    <div class="role">Operations Lead</div>
+                    <div class="meta">Oversees clinic workflows, scheduling policies, and system compliance.</div>
+                </div>
+                <div class="person">
+                    <div class="person-photo">
+                        <img src="/images/teammie.jpg" alt="Portrait placeholder for Front Desk Coordinator" width="280" height="280" loading="lazy">
+                    </div>
+                    <div class="name">Front Desk Coordinator</div>
+                    <div class="role">Patient Services</div>
+                    <div class="meta">Supports appointment requests, patient inquiries, and day-to-day coordination.</div>
+                </div>
+                <div class="person">
+                    <div class="person-photo">
+                        <img src="/images/teammie.jpg" alt="Portrait placeholder for Clinical Staff" width="280" height="280" loading="lazy">
+                    </div>
+                    <div class="name">Clinical Staff</div>
+                    <div class="role">Care Team</div>
+                    <div class="meta">Assists with service delivery, documentation, and patient follow-ups.</div>
+                </div>
+                <div class="person">
+                    <div class="person-photo">
+                        <img src="/images/teammie.jpg" alt="Portrait placeholder for System Support" width="280" height="280" loading="lazy">
+                    </div>
+                    <div class="name">System Support</div>
+                    <div class="role">Technical Support</div>
+                    <div class="meta">Maintains system reliability, security updates, and platform improvements.</div>
+                </div>
+            </div>
+            <p style="margin: 14px 0 0; font-size: 0.88rem; color: var(--muted);">Replace the placeholder art in <code>public/images/team/</code> with your team photos (same filenames, JPG or WebP).</p>
+        </section>
+
+        <section class="card">
+            <h2>Doctors</h2>
+            <p>Our current directory of available doctors.</p>
+            {% if doctors is empty %}
+                <p style="color: var(--muted);">No doctors are available yet.</p>
+            {% else %}
+                <div class="doctor-grid">
+                    {% for doctor in doctors %}
+                        <div class="person">
+                            <div class="name">{{ doctor.name }}</div>
+                            <div class="role">{{ doctor.specialization }}</div>
+                            <div class="meta">
+                                <div><strong>Email:</strong> {{ doctor.email }}</div>
+                                <div><strong>Contact:</strong> {{ doctor.contactNumber }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
     </div>
-{% endblock %}
+</main>
+</body>
+</html>

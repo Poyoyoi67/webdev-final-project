@@ -3,6 +3,7 @@
 {% block title %}Doctor List{% endblock %}
 
 {% block body %}
+    {% set can_manage = is_granted('ROLE_STAFF') or is_granted('ROLE_ADMIN') %}
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.min.css">
 
     <style>
@@ -204,8 +205,10 @@
                     <td>{{ doctor.contactNumber }}</td>
                     <td>{{ doctor.description|length > 50 ? doctor.description|slice(0, 50) ~ '...' : doctor.description }}</td>
                     <td>
-                        <a href="{{ path('app_doctor_show', {'id': doctor.id}) }}">View</a> |
-                        <a href="{{ path('app_doctor_edit', {'id': doctor.id}) }}">Edit</a>
+                        <a href="{{ path('app_doctor_show', {'id': doctor.id}) }}">View</a>
+                        {% if can_manage %}
+                            | <a href="{{ path('app_doctor_edit', {'id': doctor.id}) }}">Edit</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
@@ -213,9 +216,11 @@
         </table>
     {% endif %}
 
-    <div class="create-btn">
-        <a href="{{ path('app_doctor_new') }}">➕ Add New Doctor</a>
-    </div>
+    {% if can_manage %}
+        <div class="create-btn">
+            <a href="{{ path('app_doctor_new') }}">➕ Add New Doctor</a>
+        </div>
+    {% endif %}
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>

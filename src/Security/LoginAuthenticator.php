@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
@@ -30,23 +31,30 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        $username = $request->getPayload()->getString('username');
+        $email = $request->getPayload()->getString('email');
 
-        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $username);
+        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
         return new Passport(
-            new UserBadge($username),
+            new UserBadge($email),
             new PasswordCredentials($request->getPayload()->getString('password')),
             [
                 new CsrfTokenBadge('authenticate', $request->getPayload()->getString('csrf_token')),            ]
         );
     }
 
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
+    {
+        return new RedirectResponse($this->urlGenerator->generate(self::LOGIN_ROUTE, [
+            'registerFirst' => 1,
+        ]));
+    }
+
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $user = $token->getUser();
         if ($user) {
-            $username = method_exists($user, 'getUsername') ? $user->getUsername() : $user->getUserIdentifier();
+            $identifier = $user->getUserIdentifier();
             $roles = $user->getRoles();
             $primaryRole = 'ROLE_USER';
             if (in_array('ROLE_ADMIN', $roles)) {
@@ -54,17 +62,15 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
             } elseif (in_array('ROLE_STAFF', $roles)) {
                 $primaryRole = 'ROLE_STAFF';
             }
-            $targetData = sprintf('Username: %s, Role: %s', $username, $primaryRole);
-            $this->activityLogger->log('user_login', sprintf('User %s logged in', $username), $targetData);
+            $targetData = sprintf('User: %s, Role: %s', $identifier, $primaryRole);
+            $this->activityLogger->log('user_login', sprintf('User %s logged in', $identifier), $targetData);
         }
 
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
-        // For example:
-        return new RedirectResponse($this->urlGenerator->generate('app_about'));
-        // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        return new RedirectResponse($this->urlGenerator->generate('app_account_home'));
     }
 
     protected function getLoginUrl(Request $request): string

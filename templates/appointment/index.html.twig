@@ -3,6 +3,7 @@
 {% block title %}Appointment List{% endblock %}
 
 {% block body %}
+    {% set can_manage = is_granted('ROLE_STAFF') or is_granted('ROLE_ADMIN') %}
     <!-- ✅ DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.min.css">
 
@@ -203,8 +204,10 @@
                     <td>{{ appointment.status }}</td>
                     <td>{{ appointment.notes }}</td>
                     <td>
-                        <a href="{{ path('app_appointment_show', {'id': appointment.id}) }}">View</a> |
-                        <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}">Edit</a>
+                        <a href="{{ path('app_appointment_show', {'id': appointment.id}) }}">View</a>
+                        {% if can_manage %}
+                            | <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}">Edit</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
@@ -212,9 +215,11 @@
         </table>
     {% endif %}
 
-    <div class="create-btn">
-        <a href="{{ path('app_appointment_new') }}">➕ Add New Appointment</a>
-    </div>
+    {% if can_manage %}
+        <div class="create-btn">
+            <a href="{{ path('app_appointment_new') }}">➕ Add New Appointment</a>
+        </div>
+    {% endif %}
 
     <!-- ✅ jQuery + DataTables JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
