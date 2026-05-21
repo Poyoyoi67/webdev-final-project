@@ -21,10 +21,10 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-in
 
 COPY . .
 
-RUN composer dump-autoload --optimize --classmap-authoritative --no-interaction \
+RUN cp docker/.env.docker .env \
+    && composer dump-autoload --optimize --classmap-authoritative --no-interaction \
     && mkdir -p var/cache var/log config/jwt public/bundles \
-    && chmod +x scripts/railway-start.sh \
-    && APP_ENV=prod APP_SECRET=build-placeholder php bin/console assets:install public --no-interaction
+    && chmod +x scripts/railway-start.sh
 
 ENV APP_ENV=prod
 ENV APP_DEBUG=0

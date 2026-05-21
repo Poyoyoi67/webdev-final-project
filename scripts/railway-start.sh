@@ -18,6 +18,14 @@ fi
 mkdir -p var/cache var/log config/jwt
 chmod -R 777 var
 
+if [ ! -f .env ]; then
+  echo "==> Creating .env from docker/.env.docker (Railway variables override these)..."
+  cp docker/.env.docker .env
+fi
+
+echo "==> Installing Symfony bundle assets..."
+php bin/console assets:install public --no-interaction --env=prod
+
 # JWT keys (gitignored; created on first deploy)
 if [ ! -f config/jwt/private.pem ]; then
   if [ -z "$JWT_PASSPHRASE" ]; then
