@@ -15,13 +15,20 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/availability')]
 final class AvailabilityController extends AbstractController
 {
+    private function denyUnlessStaffOrAdmin(): void
+    {
+        if (!$this->isGranted('ROLE_STAFF') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Staff or admin access required.');
+        }
+    }
+
     #[Route(name: 'app_availability_index', methods: ['GET'])]
     public function index(
         Request $request,
         DoctorRepository $doctorRepository,
         DoctorAvailabilityRepository $availabilityRepository
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_STAFF');
+        $this->denyUnlessStaffOrAdmin();
 
         $dateParam = $request->query->get('date') ?? (new \DateTime())->format('Y-m-d');
         $selectedDate = new \DateTime($dateParam);
@@ -47,7 +54,7 @@ final class AvailabilityController extends AbstractController
         EntityManagerInterface $entityManager,
         ActivityLogger $logger
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_STAFF');
+        $this->denyUnlessStaffOrAdmin();
 
         $doctorId = $request->request->getInt('doctor_id');
         $dateString = $request->request->get('date');
@@ -98,7 +105,7 @@ final class AvailabilityController extends AbstractController
         EntityManagerInterface $entityManager,
         ActivityLogger $logger
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_STAFF');
+        $this->denyUnlessStaffOrAdmin();
 
         $doctorId = $request->request->getInt('doctor_id');
         $startDateString = $request->request->get('start_date');
