@@ -3,6 +3,7 @@ FROM php:8.2-cli-alpine
 RUN apk add --no-cache \
     icu-dev \
     libzip-dev \
+    oniguruma-dev \
     openssl \
     && docker-php-ext-configure intl \
     && docker-php-ext-install -j"$(nproc)" intl pdo_mysql opcache zip mbstring
