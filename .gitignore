@@ -33,3 +33,4 @@ yarn-error.log
 # Keep templates for deployment; ignore local secrets file only
 !.env.example
 !railway.env.example
+railway.env
