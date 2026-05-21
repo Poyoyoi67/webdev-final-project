@@ -1,4 +1,4 @@
-FROM php:8.2-cli-alpine
+FROM php:8.4-cli-alpine
 
 RUN apk add --no-cache \
     icu-dev \
@@ -16,6 +16,7 @@ WORKDIR /app
 
 # Install dependencies (no scripts — no DB/cache needed at build time)
 COPY composer.json composer.lock symfony.lock ./
+ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
 
 COPY . .
