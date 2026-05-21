@@ -1,17 +1,32 @@
-FROM php:8.5-cli
+FROM php:8.2-cli-alpine
 
-WORKDIR /var/www/html
+RUN apk add --no-cache \
+    icu-dev \
+    libzip-dev \
+    openssl \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install -j"$(nproc)" intl pdo_mysql opcache zip mbstring
 
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
-RUN apt-get update && apt-get install -y git unzip \
-    && docker-php-ext-install pdo pdo_mysql
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+WORKDIR /app
+
+# Install dependencies (no scripts — no DB/cache needed at build time)
+COPY composer.json composer.lock symfony.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
 
 COPY . .
 
-RUN composer install
+RUN composer dump-autoload --optimize --classmap-authoritative --no-interaction \
+    && mkdir -p var/cache var/log config/jwt public/bundles \
+    && chmod +x scripts/railway-start.sh \
+    && APP_ENV=prod APP_SECRET=build-placeholder php bin/console assets:install public --no-interaction
+
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
 
 EXPOSE 8000
 
-CMD ["symfony", "server:start", "--port=8000", "--no-tls"]
+CMD ["sh", "scripts/railway-start.sh"]

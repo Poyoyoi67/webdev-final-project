@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\AppointmentStatus;
 use App\Repository\AppointmentPaymentRepository;
 use App\Repository\AppointmentRepository;
 use App\Repository\DoctorAvailabilityRepository;
@@ -41,7 +42,7 @@ final class DashboardController extends AbstractController
             ]);
         }
 
-        $trackedStatuses = ['scheduled', 'finished', 'pending', 'confirmed', 'cancelled'];
+        $trackedStatuses = AppointmentStatus::TRACKED;
         $statusCounts = $appointmentRepository->countByStatuses($trackedStatuses);
 
         $totalAppointments = $appointmentRepository->countAll();

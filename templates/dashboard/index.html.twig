@@ -193,8 +193,7 @@
             text-transform: capitalize;
         }
         .badge-generic { background: #f1f5f9; color: #475569; }
-        .badge-scheduled, .badge-confirmed { background: #dbeafe; color: #1e40af; }
-        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-confirmed { background: #dbeafe; color: #1e40af; }
         .badge-finished { background: #d1fae5; color: #065f46; }
         .badge-cancelled { background: #fee2e2; color: #991b1b; }
 
@@ -278,7 +277,7 @@
                                     <td>{{ appt.service ? appt.service.name : '—' }}</td>
                                     <td>
                                         {% set s = appt.status|default('')|lower|replace({' ': '-'}) %}
-                                        <span class="badge-status {% if s in ['scheduled', 'confirmed', 'pending', 'finished', 'cancelled'] %}badge-{{ s }}{% else %}badge-generic{% endif %}">{{ appt.status }}</span>
+                                        <span class="badge-status {% if s in ['confirmed', 'finished', 'cancelled'] %}badge-{{ s }}{% else %}badge-generic{% endif %}">{{ appt.status }}</span>
                                     </td>
                                 </tr>
                             {% endfor %}

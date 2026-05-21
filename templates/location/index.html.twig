@@ -29,102 +29,230 @@
 
         .map-wrapper {
             width: 100%;
-            height: 600px;
+            height: 520px;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 1.5rem;
         }
 
-        #map {
-            width: 100%;
-            height: 100%;
-        }
+        #map { width: 100%; height: 100%; }
 
         .location-info {
             background: linear-gradient(135deg, rgba(0, 0, 128, 0.05), rgba(64, 224, 208, 0.05));
             padding: 1.5rem;
             border-radius: 8px;
             border-left: 4px solid var(--primary-blue);
+            margin-bottom: 1rem;
         }
 
-        .location-info h3 {
-            color: var(--primary-blue);
-            margin-top: 0;
-            margin-bottom: 0.5rem;
+        .location-info h3 { color: var(--primary-blue); margin-top: 0; }
+
+        .directions-panel {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1rem;
         }
 
-        .location-info p {
-            color: #2c3e50;
-            margin: 0.5rem 0;
-            font-size: 1rem;
+        .directions-panel p { margin: 0 0 0.75rem; color: #475569; font-size: 0.92rem; }
+
+        .btn-route {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: #fff;
+            border: none;
+            padding: 0.7rem 1.3rem;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
         }
 
-        .location-info .icon {
-            display: inline-block;
-            margin-right: 0.5rem;
-            color: var(--accent-turquoise);
+        .btn-route:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .route-status {
+            margin-top: 0.65rem;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .route-status.error { color: #991b1b; }
+        .route-status.success { color: #065f46; }
+
+        .patient-notice {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            margin-bottom: 1rem;
         }
     </style>
 
     <h1>Clinic Location</h1>
 
     <div class="location-container">
+        {% if isPatient and not canUseDirections %}
+            <div class="patient-notice">
+                Directions from your location are available after staff <strong>confirms</strong> one of your booking requests.
+                <a href="{{ path('app_book_my') }}">View my bookings</a>
+            </div>
+        {% endif %}
+
+        {% if canUseDirections %}
+            <div class="directions-panel">
+                <p>Your booking is confirmed. Allow location access to see the shortest driving route to the clinic.</p>
+                <button type="button" class="btn-route" id="btn-get-route">Show route from my location</button>
+                <div class="route-status" id="route-status"></div>
+            </div>
+        {% endif %}
+
         <div class="map-wrapper">
             <div id="map"></div>
         </div>
 
         <div class="location-info">
-            <h3>
-                <span class="icon">📍</span>
-                {{ clinicLocation.name }}
-            </h3>
-            <p>
-                <span class="icon">🏥</span>
-                {{ clinicLocation.address }}
-            </p>
-            <p>
-                <span class="icon">📞</span>
-                Contact us for directions
-            </p>
+            <h3>📍 {{ clinicLocation.name }}</h3>
+            <p>🏥 {{ clinicLocation.address }}</p>
         </div>
     </div>
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossorigin=""/>
-
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize map centered on clinic location
-            const map = L.map('map').setView([{{ clinicLocation.latitude }}, {{ clinicLocation.longitude }}], 15);
+        document.addEventListener('DOMContentLoaded', function () {
+            const clinicLat = {{ clinicLocation.latitude }};
+            const clinicLng = {{ clinicLocation.longitude }};
+            const clinicName = {{ clinicLocation.name|json_encode|raw }};
+            const clinicAddress = {{ clinicLocation.address|json_encode|raw }};
+            const canUseDirections = {{ canUseDirections ? 'true' : 'false' }};
 
-            // Add OpenStreetMap tiles (free)
+            const map = L.map('map').setView([clinicLat, clinicLng], 14);
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                attribution: '&copy; OpenStreetMap contributors',
                 maxZoom: 19
             }).addTo(map);
 
-            // Add marker for clinic location
-            const clinicMarker = L.marker([{{ clinicLocation.latitude }}, {{ clinicLocation.longitude }}])
+            const clinicIcon = L.icon({
+                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                shadowSize: [41, 41]
+            });
+
+            const clinicMarker = L.marker([clinicLat, clinicLng], { icon: clinicIcon })
                 .addTo(map)
-                .bindPopup(`
-                    <div style="text-align: center;">
-                        <strong style="color: #000080; font-size: 1.1em;">{{ clinicLocation.name }}</strong><br>
-                        <span style="color: #2c3e50;">{{ clinicLocation.address }}</span>
-                    </div>
-                `)
+                .bindPopup('<strong>' + clinicName + '</strong><br>' + clinicAddress)
                 .openPopup();
 
-            // Add custom icon (optional - using default marker)
-            // You can customize the marker icon if needed
+            let userMarker = null;
+            let routeLayer = null;
+            const statusEl = document.getElementById('route-status');
+            const btnRoute = document.getElementById('btn-get-route');
+
+            function setStatus(text, type) {
+                if (!statusEl) return;
+                statusEl.textContent = text;
+                statusEl.className = 'route-status' + (type ? ' ' + type : '');
+            }
+
+            async function drawRoute(userLat, userLng) {
+                const url = 'https://router.project-osrm.org/route/v1/driving/'
+                    + userLng + ',' + userLat + ';' + clinicLng + ',' + clinicLat
+                    + '?overview=full&geometries=geojson';
+
+                setStatus('Calculating shortest route…', '');
+
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+
+                    if (!data.routes || !data.routes.length) {
+                        setStatus('Could not find a route. Try again later.', 'error');
+                        return;
+                    }
+
+                    const route = data.routes[0];
+                    const coords = route.geometry.coordinates.map(function (c) {
+                        return [c[1], c[0]];
+                    });
+
+                    if (routeLayer) {
+                        map.removeLayer(routeLayer);
+                    }
+
+                    routeLayer = L.polyline(coords, {
+                        color: '#000080',
+                        weight: 5,
+                        opacity: 0.85
+                    }).addTo(map);
+
+                    map.fitBounds(routeLayer.getBounds().pad(0.15));
+
+                    const km = (route.distance / 1000).toFixed(1);
+                    const mins = Math.round(route.duration / 60);
+                    setStatus('Route ready — about ' + km + ' km, ~' + mins + ' min drive.', 'success');
+                } catch (e) {
+                    setStatus('Failed to load route. Check your connection.', 'error');
+                }
+            }
+
+            function onUserPosition(position) {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                if (userMarker) {
+                    map.removeLayer(userMarker);
+                }
+
+                userMarker = L.circleMarker([userLat, userLng], {
+                    radius: 9,
+                    fillColor: '#40E0D0',
+                    color: '#000080',
+                    weight: 2,
+                    fillOpacity: 0.9
+                }).addTo(map).bindPopup('Your location');
+
+                drawRoute(userLat, userLng);
+            }
+
+            function onPositionError(err) {
+                let msg = 'Location access denied or unavailable.';
+                if (err.code === 1) {
+                    msg = 'Please allow location permission in your browser to see the route.';
+                }
+                setStatus(msg, 'error');
+                if (btnRoute) btnRoute.disabled = false;
+            }
+
+            if (canUseDirections && btnRoute) {
+                btnRoute.addEventListener('click', function () {
+                    if (!navigator.geolocation) {
+                        setStatus('Geolocation is not supported on this device.', 'error');
+                        return;
+                    }
+
+                    btnRoute.disabled = true;
+                    setStatus('Requesting your location…', '');
+
+                    navigator.geolocation.getCurrentPosition(
+                        function (pos) {
+                            btnRoute.disabled = false;
+                            onUserPosition(pos);
+                        },
+                        function (err) {
+                            onPositionError(err);
+                        },
+                        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                    );
+                });
+            }
         });
     </script>
 {% endblock %}
-

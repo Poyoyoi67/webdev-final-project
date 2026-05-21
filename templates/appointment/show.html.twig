@@ -159,6 +159,16 @@
 
         <div class="page-actions">
             <a href="{{ path('app_appointment_index') }}" class="btn btn-secondary">⬅ Back to list</a>
+            {% if can_manage and appointment.status == 'pending' %}
+                <form method="post" action="{{ path('app_appointment_confirm', {id: appointment.id}) }}" style="display:inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('confirm' ~ appointment.id) }}">
+                    <button type="submit" class="btn btn-primary">✓ Confirm</button>
+                </form>
+                <form method="post" action="{{ path('app_appointment_reject', {id: appointment.id}) }}" style="display:inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ appointment.id) }}">
+                    <button type="submit" class="btn btn-danger">✗ Reject</button>
+                </form>
+            {% endif %}
             {% if can_manage %}
                 <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}" class="btn btn-primary">✏ Edit</a>
 

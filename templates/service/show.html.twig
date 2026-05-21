@@ -144,7 +144,12 @@
         </table>
 
         <div class="page-actions">
-            <a href="{{ path('app_service_index') }}" class="btn btn-secondary">⬅ Back to list</a>
+            {% if can_manage %}
+                <a href="{{ path('app_service_index') }}" class="btn btn-secondary">⬅ Back to list</a>
+            {% else %}
+                <a href="{{ path('app_account_home') }}" class="btn btn-secondary">⬅ Back to home</a>
+                <a href="{{ path('app_book_index', {service: service.id}) }}" class="btn btn-primary">Book this service</a>
+            {% endif %}
             {% if can_manage %}
                 <a href="{{ path('app_service_edit', {'id': service.id}) }}" class="btn btn-primary">✏ Edit</a>
 

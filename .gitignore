@@ -1,4 +1,5 @@
 ###> symfony/framework-bundle ###
+/.env
 /.env.local
 /.env.local.php
 /.env.*.local
@@ -29,4 +30,6 @@ yarn-error.log
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
-.env*
+# Keep templates for deployment; ignore local secrets file only
+!.env.example
+!railway.env.example

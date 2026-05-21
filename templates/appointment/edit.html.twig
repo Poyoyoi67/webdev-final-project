@@ -25,8 +25,8 @@
         }
 
         .form-container {
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 700px;
+            margin: 3rem auto;
             background: var(--white);
             padding: 2rem;
             border-radius: 12px;
@@ -42,7 +42,8 @@
 
         .form-container input,
         .form-container textarea,
-        .form-container select {
+        .form-container select,
+        .form-select {
             width: 100%;
             padding: 0.7rem;
             border: 1px solid #ddd;
@@ -121,7 +122,11 @@
         {{ form_start(form) }}
             {{ form_row(form.patientName) }}
             {{ form_row(form.appointmentDate) }}
-            {{ form_row(form.status) }}
+            <div class="form-group" style="margin-bottom: 1.2rem;">
+                {{ form_label(form.status) }}
+                {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+                {{ form_errors(form.status) }}
+            </div>
             {{ form_row(form.notes) }}
             {{ form_row(form.doctor) }}
             {{ form_row(form.service) }}

@@ -1,0 +1,4 @@
+# Production settings for cloud hosts (Railway, etc.)
+framework:
+    trusted_proxies: 'private_ranges'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-host', 'x-forwarded-port']

@@ -281,9 +281,7 @@
     </style>
 
     {% set status_colors = {
-        'scheduled': '#0f3c74',
         'finished': '#24b8b5',
-        'pending': '#f59e0b',
         'confirmed': '#3b82f6',
         'cancelled': '#dc2626'
     } %}
@@ -348,12 +346,8 @@
                                     <div class="pct">{% if totalAppointments > 0 %}{{ pct }}% of total{% else %}—{% endif %}</div>
                                 </div>
                                 <div class="status-icon" aria-hidden="true">
-                                    {% if status == 'scheduled' %}
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                                    {% elseif status == 'finished' %}
+                                    {% if status == 'finished' %}
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                    {% elseif status == 'pending' %}
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     {% elseif status == 'confirmed' %}
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>
                                     {% elseif status == 'cancelled' %}
@@ -374,7 +368,7 @@
                     <h2>Reading the report</h2>
                     <ul>
                         <li><strong>Total</strong> is the full appointment count across every status.</li>
-                        <li>The <strong>mix bar</strong> shows how bookings split between scheduled, finished, pending, confirmed, and cancelled.</li>
+                        <li>The <strong>mix bar</strong> shows how bookings split between finished, confirmed, and cancelled.</li>
                         <li><strong>Percentages</strong> use total appointments as the denominator.</li>
                     </ul>
                 </div>

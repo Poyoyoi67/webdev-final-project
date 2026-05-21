@@ -142,7 +142,12 @@
         </table>
 
         <div class="page-actions">
-            <a href="{{ path('app_doctor_index') }}" class="btn btn-secondary">⬅ Back to list</a>
+            {% if can_manage %}
+                <a href="{{ path('app_doctor_index') }}" class="btn btn-secondary">⬅ Back to list</a>
+            {% else %}
+                <a href="{{ path('app_account_home') }}" class="btn btn-secondary">⬅ Back to home</a>
+                <a href="{{ path('app_book_index') }}" class="btn btn-primary">Book appointment</a>
+            {% endif %}
             {% if can_manage %}
                 <a href="{{ path('app_doctor_edit', {'id': doctor.id}) }}" class="btn btn-primary">✏ Edit</a>
 

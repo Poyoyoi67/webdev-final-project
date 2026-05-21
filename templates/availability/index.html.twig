@@ -110,32 +110,6 @@
             border-color: var(--accent-turquoise);
         }
 
-        .filter {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            gap: 0.5rem;
-        }
-
-        .filter input[type="date"],
-        .filter button {
-            padding: 0.7rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .filter button {
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .filter button:hover {
-            background: var(--accent-turquoise);
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -264,13 +238,6 @@
                 </p>
             </div>
         </div>
-    </div>
-
-    <div class="filter">
-        <form method="get">
-            <input type="date" name="date" value="{{ selectedDate|date('Y-m-d') }}">
-            <button type="submit">Refresh</button>
-        </form>
     </div>
 
     <table>

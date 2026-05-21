@@ -201,12 +201,27 @@
                     <td>{{ appointment.id }}</td>
                     <td>{{ appointment.patientName }}</td>
                     <td>{{ appointment.appointmentDate ? appointment.appointmentDate|date('Y-m-d H:i') : '' }}</td>
-                    <td>{{ appointment.status }}</td>
+                    <td>
+                        {% set st = appointment.status|lower %}
+                        <span style="font-weight:600;text-transform:capitalize;{% if st == 'pending' %}color:#92400e;{% elseif st == 'confirmed' %}color:#1e40af;{% elseif st == 'cancelled' %}color:#991b1b;{% else %}color:#065f46;{% endif %}">
+                            {{ appointment.status }}
+                        </span>
+                    </td>
                     <td>{{ appointment.notes }}</td>
                     <td>
                         <a href="{{ path('app_appointment_show', {'id': appointment.id}) }}">View</a>
                         {% if can_manage %}
                             | <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}">Edit</a>
+                            {% if st == 'pending' %}
+                                | <form method="post" action="{{ path('app_appointment_confirm', {id: appointment.id}) }}" style="display:inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('confirm' ~ appointment.id) }}">
+                                    <button type="submit" style="background:none;border:none;color:#16a34a;cursor:pointer;font-weight:600;padding:0;">Confirm</button>
+                                </form>
+                                | <form method="post" action="{{ path('app_appointment_reject', {id: appointment.id}) }}" style="display:inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ appointment.id) }}">
+                                    <button type="submit" style="background:none;border:none;color:#dc2626;cursor:pointer;font-weight:600;padding:0;">Reject</button>
+                                </form>
+                            {% endif %}
                         {% endif %}
                     </td>
                 </tr>

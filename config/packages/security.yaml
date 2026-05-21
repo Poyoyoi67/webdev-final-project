@@ -59,6 +59,8 @@ security:
         - { path: ^/register$, roles: PUBLIC_ACCESS }
         - { path: ^/connect/google, roles: PUBLIC_ACCESS }
         - { path: ^/contact$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/health$, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

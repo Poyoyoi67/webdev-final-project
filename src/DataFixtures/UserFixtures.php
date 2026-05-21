@@ -33,6 +33,13 @@ class UserFixtures extends Fixture
         $staff->setPassword($this->passwordHasher->hashPassword($staff, 'staffpassword'));
         $manager->persist($staff);
 
+        $patient = new User();
+        $patient->setEmail('patient@health.com');
+        $patient->setRoles(['ROLE_USER']);
+        $patient->setIsVerified(true);
+        $patient->setPassword($this->passwordHasher->hashPassword($patient, 'patient123'));
+        $manager->persist($patient);
+
         $manager->flush();
     }
 }

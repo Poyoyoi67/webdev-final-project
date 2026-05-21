@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\AppointmentStatus;
 use App\Entity\Appointment;
 use App\Form\AppointmentType;
 use App\Repository\AppointmentRepository;
@@ -19,8 +20,12 @@ final class AppointmentController extends AbstractController
     #[Route(name: 'app_appointment_index', methods: ['GET'])]
     public function index(AppointmentRepository $appointmentRepository): Response
     {
+        if (!$this->isGranted('ROLE_STAFF') && !$this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('app_book_my');
+        }
+
         return $this->render('appointment/index.html.twig', [
-            'appointments' => $appointmentRepository->findAll(),
+            'appointments' => $appointmentRepository->findAllOrderedForStaff(),
         ]);
     }
 
@@ -30,6 +35,7 @@ final class AppointmentController extends AbstractController
         $this->denyCrudForRegularUsers();
 
         $appointment = new Appointment();
+        $appointment->setStatus(AppointmentStatus::CONFIRMED);
         $form = $this->createForm(AppointmentType::class, $appointment);
         $form->handleRequest($request);
 
@@ -98,6 +104,44 @@ final class AppointmentController extends AbstractController
             'appointment' => $appointment,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/{id}/confirm', name: 'app_appointment_confirm', methods: ['POST'])]
+    public function confirm(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
+    {
+        $this->denyCrudForRegularUsers();
+
+        if ($this->isCsrfTokenValid('confirm'.$appointment->getId(), $request->getPayload()->getString('_token'))) {
+            $appointment->setStatus(AppointmentStatus::CONFIRMED);
+            $entityManager->flush();
+            $logger->log(
+                'appointment_confirmed',
+                sprintf('Appointment #%d confirmed', $appointment->getId()),
+                sprintf('Patient: %s', $appointment->getPatientName())
+            );
+            $this->addFlash('success', 'Appointment confirmed.');
+        }
+
+        return $this->redirectToRoute('app_appointment_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/reject', name: 'app_appointment_reject', methods: ['POST'])]
+    public function reject(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
+    {
+        $this->denyCrudForRegularUsers();
+
+        if ($this->isCsrfTokenValid('reject'.$appointment->getId(), $request->getPayload()->getString('_token'))) {
+            $appointment->setStatus(AppointmentStatus::CANCELLED);
+            $entityManager->flush();
+            $logger->log(
+                'appointment_rejected',
+                sprintf('Appointment #%d rejected', $appointment->getId()),
+                sprintf('Patient: %s', $appointment->getPatientName())
+            );
+            $this->addFlash('success', 'Appointment request rejected.');
+        }
+
+        return $this->redirectToRoute('app_appointment_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}', name: 'app_appointment_delete', methods: ['POST'])]

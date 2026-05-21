@@ -21,7 +21,7 @@ final class AvailabilityController extends AbstractController
         DoctorRepository $doctorRepository,
         DoctorAvailabilityRepository $availabilityRepository
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('ROLE_STAFF');
 
         $dateParam = $request->query->get('date') ?? (new \DateTime())->format('Y-m-d');
         $selectedDate = new \DateTime($dateParam);
@@ -47,7 +47,7 @@ final class AvailabilityController extends AbstractController
         EntityManagerInterface $entityManager,
         ActivityLogger $logger
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('ROLE_STAFF');
 
         $doctorId = $request->request->getInt('doctor_id');
         $dateString = $request->request->get('date');
@@ -98,7 +98,7 @@ final class AvailabilityController extends AbstractController
         EntityManagerInterface $entityManager,
         ActivityLogger $logger
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('ROLE_STAFF');
 
         $doctorId = $request->request->getInt('doctor_id');
         $startDateString = $request->request->get('start_date');

@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block header %}My booking requests{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --accent-turquoise: #40E0D0;
+        }
+        .my-wrap { max-width: 900px; margin: 0 auto; }
+        .booking-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 1.2rem 1.3rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 16px rgba(0,0,128,0.06);
+        }
+        .booking-card h3 { margin: 0 0 0.5rem; color: var(--primary-blue); font-size: 1.05rem; }
+        .booking-meta { font-size: 0.9rem; color: #475569; margin: 0.25rem 0; }
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-confirmed { background: #dbeafe; color: #1e40af; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .status-finished { background: #d1fae5; color: #065f46; }
+        .empty { text-align: center; color: #64748b; padding: 2rem; }
+        .actions-top { margin-bottom: 1.25rem; }
+        .btn-book {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
+            color: #fff;
+            padding: 0.65rem 1.2rem;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .directions-hint {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: #0f766e;
+        }
+        .directions-hint a { color: var(--primary-blue); font-weight: 600; }
+    </style>
+
+    <div class="my-wrap">
+        <div class="actions-top">
+            <a href="{{ path('app_book_index') }}" class="btn-book">+ New booking</a>
+        </div>
+
+        {% if appointments is empty %}
+            <p class="empty">You have no booking requests yet.</p>
+        {% else %}
+            {% for appt in appointments %}
+                <article class="booking-card">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                        <h3>{{ appt.service ? appt.service.name : 'Service' }}</h3>
+                        {% set s = appt.status|lower %}
+                        <span class="status-badge status-{{ s }}">{{ appt.status }}</span>
+                    </div>
+                    <p class="booking-meta"><strong>Doctor:</strong> {{ appt.doctor ? appt.doctor.name : '—' }}</p>
+                    <p class="booking-meta"><strong>When:</strong> {{ appt.appointmentDate|date('M j, Y · g:i A') }}</p>
+                    {% if appt.notes %}
+                        <p class="booking-meta"><strong>Notes:</strong> {{ appt.notes }}</p>
+                    {% endif %}
+                    {% if s == 'pending' %}
+                        <p class="booking-meta" style="color:#92400e;">Awaiting staff confirmation.</p>
+                    {% endif %}
+                    {% if s == 'confirmed' %}
+                        <p class="directions-hint">
+                            ✅ Confirmed — <a href="{{ path('app_location_index') }}">Get directions to the clinic</a>
+                        </p>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

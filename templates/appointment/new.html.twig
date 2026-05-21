@@ -9,107 +9,261 @@
             --accent-turquoise: #40E0D0;
             --dark-navy: #03033f;
             --light-gray: #f8f9fa;
-            --medium-gray: #6c757d;
             --white: #ffffff;
             --shadow-light: 0 2px 10px rgba(0, 0, 128, 0.1);
+            --shadow-medium: 0 4px 20px rgba(0, 0, 128, 0.15);
             --shadow-strong: 0 8px 30px rgba(3, 3, 63, 0.2);
         }
 
-        body {
-            background-color: var(--light-gray);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--dark-navy);
-            padding: 30px;
+        .form-container {
+            max-width: 700px;
+            margin: 3rem auto;
+            background: var(--white);
+            padding: 2rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
         }
 
         h1 {
             text-align: center;
-            font-weight: 700;
-            font-size: 2rem;
-            margin-bottom: 30px;
+            margin-bottom: 2rem;
             background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            font-weight: 700;
         }
 
-        form {
-            background-color: var(--white);
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 25px 35px;
-            border-radius: 15px;
-            box-shadow: var(--shadow-light);
+        .form-group {
+            margin-bottom: 1.5rem;
         }
 
         label {
+            font-weight: 500;
+            color: var(--primary-blue);
             display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--accent-turquoise);
+            outline: none;
+            box-shadow: 0 0 8px rgba(64, 224, 208, 0.4);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .datetime-group {
+            background: linear-gradient(135deg, rgba(0, 0, 128, 0.03) 0%, rgba(64, 224, 208, 0.07) 100%);
+            border: 1px solid rgba(0, 0, 128, 0.1);
+            border-left: 3px solid var(--accent-turquoise);
+            border-radius: 12px;
+            padding: 1rem 1.15rem 1.1rem;
+        }
+
+        .datetime-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             font-weight: 600;
             color: var(--primary-blue);
-            margin-bottom: 5px;
+            margin-bottom: 0.65rem;
+            font-size: 0.95rem;
         }
 
-        input[type="text"],
-        input[type="datetime-local"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
+        .datetime-label-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            background: rgba(64, 224, 208, 0.2);
+            color: var(--primary-blue);
+            flex-shrink: 0;
         }
 
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border-color: var(--accent-turquoise);
-            box-shadow: 0 0 5px rgba(64, 224, 208, 0.4);
+        .datetime-label-icon svg {
+            width: 16px;
+            height: 16px;
         }
 
-        button {
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-turquoise));
-            color: var(--white);
-            border: none;
-            padding: 10px 25px;
+        .datetime-input-wrap {
+            position: relative;
+        }
+
+        .datetime-input-wrap::after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            pointer-events: none;
+            opacity: 0.45;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000080' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .datetime-input {
+            width: 100%;
+            padding: 0.8rem 2.5rem 0.8rem 1rem;
+            border: 2px solid var(--light-gray);
             border-radius: 10px;
-            font-weight: 600;
+            font-size: 1rem;
+            font-family: inherit;
+            color: var(--dark-navy);
+            background: var(--white);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            transition: 0.3s;
         }
 
-        button:hover {
+        .datetime-input:hover {
+            border-color: rgba(64, 224, 208, 0.6);
+        }
+
+        .datetime-input:focus {
+            border-color: var(--accent-turquoise);
+            outline: none;
+            box-shadow: 0 0 8px rgba(64, 224, 208, 0.35);
+        }
+
+        .datetime-input::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .datetime-hint {
+            margin: 0.5rem 0 0;
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .datetime-group .invalid-feedback,
+        .datetime-group .form-error-message,
+        .datetime-group ul {
+            margin: 0.5rem 0 0;
+            padding: 0;
+            list-style: none;
+            font-size: 0.82rem;
+            color: #dc2626;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-navy));
+            color: var(--white);
+            padding: 0.9rem 1.8rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-strong);
         }
 
-        .actions {
-            text-align: center;
-            margin-top: 25px;
-        }
-
-        .back-link {
+        .btn-back {
             display: inline-block;
-            margin-top: 20px;
-            text-decoration: none;
+            margin-top: 1rem;
             color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            background: var(--white);
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            transition: all 0.3s ease;
         }
 
-        .back-link:hover {
-            color: var(--accent-turquoise);
+        .btn-back:hover {
+            background: var(--accent-turquoise);
+            color: var(--white);
+            border-color: var(--accent-turquoise);
         }
     </style>
 
     <h1>Create New Appointment</h1>
 
     <div class="form-container">
-        {{ include('appointment/_form.html.twig') }}
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.patientName) }}
+                {{ form_widget(form.patientName, {'attr': {'class': 'form-input'}}) }}
+                {{ form_errors(form.patientName) }}
+            </div>
+
+            <div class="form-group datetime-group">
+                <label for="{{ form.appointmentDate.vars.id }}" class="datetime-label">
+                    <span class="datetime-label-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </span>
+                    Appointment date &amp; time
+                </label>
+                <div class="datetime-input-wrap">
+                    {{ form_widget(form.appointmentDate, {'attr': {'class': 'datetime-input'}}) }}
+                </div>
+                <p class="datetime-hint">Pick the date and time for this visit. Past dates are not allowed.</p>
+                {{ form_errors(form.appointmentDate) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.status) }}
+                {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+                {{ form_errors(form.status) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.notes) }}
+                {{ form_widget(form.notes, {'attr': {'class': 'form-textarea'}}) }}
+                {{ form_errors(form.notes) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.doctor) }}
+                {{ form_widget(form.doctor, {'attr': {'class': 'form-select'}}) }}
+                {{ form_errors(form.doctor) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.service) }}
+                {{ form_widget(form.service, {'attr': {'class': 'form-select'}}) }}
+                {{ form_errors(form.service) }}
+            </div>
+
+            <button type="submit" class="btn-submit">💾 Save Appointment</button>
+        {{ form_end(form) }}
     </div>
 
-    <div class="actions">
-        <a href="{{ path('app_appointment_index') }}" class="back-link">← Back to list</a>
-    </div>
+    <p style="text-align: center;">
+        <a href="{{ path('app_appointment_index') }}" class="btn-back">⬅ Back to list</a>
+    </p>
 {% endblock %}

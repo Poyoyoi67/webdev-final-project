@@ -1,0 +1,20 @@
+# Do not send these into the Docker build context
+.git
+.gitignore
+.env
+.env.local
+.env.*.local
+var/
+vendor/
+node_modules/
+public/build/
+tests/
+.phpunit.result.cache
+phpunit.xml
+docker-compose.yaml
+*.md
+!DEPLOY_RAILWAY.md
+config/jwt/*.pem
+.idea
+.vscode
+terminals/

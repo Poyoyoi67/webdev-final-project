@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\AppointmentStatus;
 use App\Repository\AppointmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,8 +14,7 @@ final class ReportController extends AbstractController
     #[Route(name: 'app_report_index', methods: ['GET'])]
     public function index(AppointmentRepository $appointmentRepository): Response
     {
-        // Configure the statuses you want to track. Adjust as needed.
-        $trackedStatuses = ['scheduled', 'finished', 'pending', 'confirmed', 'cancelled'];
+        $trackedStatuses = AppointmentStatus::TRACKED;
 
         $statusCounts = $appointmentRepository->countByStatuses($trackedStatuses);
 

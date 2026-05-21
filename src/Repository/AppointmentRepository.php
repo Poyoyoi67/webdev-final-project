@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\AppointmentStatus;
 use App\Entity\Appointment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -53,6 +54,57 @@ class AppointmentRepository extends ServiceEntityRepository
             ->select('COUNT(a.id)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * @return Appointment[]
+     */
+    public function findByPatientIdentifier(string $patientIdentifier): array
+    {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.doctor', 'd')->addSelect('d')
+            ->leftJoin('a.service', 's')->addSelect('s')
+            ->andWhere('a.patientName = :patient')
+            ->setParameter('patient', $patientIdentifier)
+            ->orderBy('a.appointmentDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Appointment[]
+     */
+    public function findAllOrderedForStaff(): array
+    {
+        $appointments = $this->createQueryBuilder('a')
+            ->leftJoin('a.doctor', 'd')->addSelect('d')
+            ->leftJoin('a.service', 's')->addSelect('s')
+            ->getQuery()
+            ->getResult();
+
+        usort($appointments, static function (Appointment $a, Appointment $b): int {
+            $aPending = AppointmentStatus::isPending($a->getStatus());
+            $bPending = AppointmentStatus::isPending($b->getStatus());
+            if ($aPending !== $bPending) {
+                return $aPending ? -1 : 1;
+            }
+
+            return ($a->getAppointmentDate() ?? new \DateTime()) <=> ($b->getAppointmentDate() ?? new \DateTime());
+        });
+
+        return $appointments;
+    }
+
+    public function hasConfirmedBookingForPatient(string $patientIdentifier): bool
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->andWhere('a.patientName = :patient')
+            ->andWhere('a.status = :confirmed')
+            ->setParameter('patient', $patientIdentifier)
+            ->setParameter('confirmed', 'confirmed')
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
     }
 
     //    /**
