@@ -1,6 +1,6 @@
 # Railway deployment — HealthCare
 
-This project is **ready to push**. Deployment uses the `Dockerfile` and `scripts/railway-start.sh`.
+This project is **ready to push**. Deployment uses `dockerfile` (lowercase) and `scripts/railway-start.sh` — `railway.toml` must use `dockerfilePath = "dockerfile"`.
 
 ## Before `git push`
 
