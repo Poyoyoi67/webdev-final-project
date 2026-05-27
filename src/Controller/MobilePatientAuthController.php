@@ -32,6 +32,7 @@ final class MobilePatientAuthController extends AbstractController
         }
 
         $idToken = (string) ($payload['idToken'] ?? '');
+        $fcmToken = isset($payload['fcmToken']) ? (string) $payload['fcmToken'] : null;
 
         try {
             $googleUser = $tokenVerifier->verify($idToken);
@@ -62,6 +63,10 @@ final class MobilePatientAuthController extends AbstractController
             $entityManager->persist($user);
         }
 
+        if ($fcmToken !== null && $fcmToken !== '') {
+            $user->setFcmToken($fcmToken);
+        }
+
         $entityManager->flush();
 
         $token = $jwtManager->create($user);
@@ -73,5 +78,39 @@ final class MobilePatientAuthController extends AbstractController
                 'roles' => $user->getRoles(),
             ],
         ]);
+    }
+
+    #[Route('/device-token', name: 'api_mobile_patient_device_token', methods: ['POST'])]
+    public function registerDeviceToken(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): JsonResponse {
+        $this->denyStaffArea();
+
+        $payload = json_decode($request->getContent(), true);
+        if (!\is_array($payload)) {
+            return $this->json(['message' => 'Invalid JSON body'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $fcmToken = (string) ($payload['fcmToken'] ?? '');
+        if ($fcmToken === '') {
+            return $this->json(['message' => 'fcmToken is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $user->setFcmToken($fcmToken);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Device token saved']);
+    }
+
+    private function denyStaffArea(): void
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_STAFF')) {
+            throw $this->createAccessDeniedException('Patient mobile API only.');
+        }
     }
 }

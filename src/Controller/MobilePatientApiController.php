@@ -8,6 +8,7 @@ use App\Repository\AppointmentRepository;
 use App\Repository\DoctorAvailabilityRepository;
 use App\Repository\DoctorRepository;
 use App\Repository\ServiceRepository;
+use App\Service\FcmNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -114,6 +115,7 @@ final class MobilePatientApiController extends AbstractController
         ServiceRepository $serviceRepository,
         DoctorRepository $doctorRepository,
         DoctorAvailabilityRepository $availabilityRepository,
+        FcmNotificationService $fcmNotificationService,
     ): JsonResponse {
         $this->denyStaffArea();
 
@@ -159,6 +161,21 @@ final class MobilePatientApiController extends AbstractController
 
         $entityManager->persist($appointment);
         $entityManager->flush();
+
+        $user = $this->getUser();
+        if ($user instanceof \App\Entity\User) {
+            $serviceName = $service->getName() ?? 'your service';
+            $fcmNotificationService->notifyUser(
+                $user,
+                'Booking submitted',
+                sprintf('Your request for %s is pending staff approval.', $serviceName),
+                [
+                    'type' => 'booking_created',
+                    'appointmentId' => (string) $appointment->getId(),
+                    'status' => AppointmentStatus::PENDING,
+                ],
+            );
+        }
 
         return $this->json([
             'message' => 'Booking request submitted',

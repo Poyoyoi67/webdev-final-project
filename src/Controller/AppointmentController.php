@@ -7,7 +7,9 @@ use App\Entity\Appointment;
 use App\Form\AppointmentType;
 use App\Repository\AppointmentRepository;
 use App\Entity\AppointmentPayment;
+use App\Repository\UserRepository;
 use App\Service\ActivityLogger;
+use App\Service\FcmNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -107,8 +109,14 @@ final class AppointmentController extends AbstractController
     }
 
     #[Route('/{id}/confirm', name: 'app_appointment_confirm', methods: ['POST'])]
-    public function confirm(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
-    {
+    public function confirm(
+        Request $request,
+        Appointment $appointment,
+        EntityManagerInterface $entityManager,
+        ActivityLogger $logger,
+        UserRepository $userRepository,
+        FcmNotificationService $fcmNotificationService,
+    ): Response {
         $this->denyCrudForRegularUsers();
 
         if ($this->isCsrfTokenValid('confirm'.$appointment->getId(), $request->getPayload()->getString('_token'))) {
@@ -119,6 +127,23 @@ final class AppointmentController extends AbstractController
                 sprintf('Appointment #%d confirmed', $appointment->getId()),
                 sprintf('Patient: %s', $appointment->getPatientName())
             );
+
+            $patient = $userRepository->findOneBy(['email' => $appointment->getPatientName()]);
+            if ($patient !== null) {
+                $serviceName = $appointment->getService()?->getName() ?? 'your appointment';
+                $dateLabel = $appointment->getAppointmentDate()?->format('M j, Y g:i A') ?? '';
+                $fcmNotificationService->notifyUser(
+                    $patient,
+                    'Appointment confirmed',
+                    sprintf('%s is confirmed for %s.', $serviceName, $dateLabel),
+                    [
+                        'type' => 'booking_confirmed',
+                        'appointmentId' => (string) $appointment->getId(),
+                        'status' => AppointmentStatus::CONFIRMED,
+                    ],
+                );
+            }
+
             $this->addFlash('success', 'Appointment confirmed.');
         }
 

@@ -5,6 +5,9 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     google_web_client_id: '%env(string:default::GOOGLE_WEB_CLIENT_ID)%'
+    firebase_project_id: '%env(string:default::FIREBASE_PROJECT_ID)%'
+    firebase_service_account_path: '%env(string:default::FIREBASE_SERVICE_ACCOUNT_PATH)%'
+    firebase_service_account_json: '%env(string:default::FIREBASE_SERVICE_ACCOUNT_JSON)%'
 
 services:
     # default configuration for services in *this* file
@@ -27,6 +30,12 @@ services:
     App\Service\GoogleIdTokenVerifier:
         arguments:
             $googleWebClientId: '%google_web_client_id%'
+
+    App\Service\FcmNotificationService:
+        arguments:
+            $firebaseProjectId: '%firebase_project_id%'
+            $firebaseServiceAccountPath: '%firebase_service_account_path%'
+            $firebaseServiceAccountJson: '%firebase_service_account_json%'
 
     App\Service\EmailVerificationService:
         arguments:
