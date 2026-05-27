@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 
@@ -14,9 +13,7 @@ class EmailVerificationService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private MailerInterface $mailer,
-        #[Autowire(env: 'MAILER_FROM_ADDRESS')]
         private string $fromEmail,
-        #[Autowire(env: 'MAILER_FROM_NAME')]
         private string $fromName,
     ) {
     }
