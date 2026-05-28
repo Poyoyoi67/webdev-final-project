@@ -9,6 +9,7 @@ use App\Repository\AppointmentRepository;
 use App\Entity\AppointmentPayment;
 use App\Repository\UserRepository;
 use App\Service\ActivityLogger;
+use App\Service\AppointmentRealtimeVersionStore;
 use App\Service\FcmNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +33,12 @@ final class AppointmentController extends AbstractController
     }
 
     #[Route('/new', name: 'app_appointment_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ActivityLogger $logger,
+        AppointmentRealtimeVersionStore $realtimeVersionStore,
+    ): Response
     {
         $this->denyCrudForRegularUsers();
 
@@ -62,6 +68,7 @@ final class AppointmentController extends AbstractController
             $payment->setPaidAt(new \DateTimeImmutable());
             $entityManager->persist($payment);
             $entityManager->flush();
+            $realtimeVersionStore->bump();
 
             return $this->redirectToRoute('app_appointment_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -81,7 +88,13 @@ final class AppointmentController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_appointment_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
+    public function edit(
+        Request $request,
+        Appointment $appointment,
+        EntityManagerInterface $entityManager,
+        ActivityLogger $logger,
+        AppointmentRealtimeVersionStore $realtimeVersionStore,
+    ): Response
     {
         $this->denyCrudForRegularUsers();
 
@@ -98,6 +111,7 @@ final class AppointmentController extends AbstractController
                 $appointment->getDoctor()?->getName() ?? 'N/A'
             );
             $logger->log('appointment_updated', sprintf('Appointment #%d updated', $appointment->getId()), $targetData);
+            $realtimeVersionStore->bump();
 
             return $this->redirectToRoute('app_appointment_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -116,6 +130,7 @@ final class AppointmentController extends AbstractController
         ActivityLogger $logger,
         UserRepository $userRepository,
         FcmNotificationService $fcmNotificationService,
+        AppointmentRealtimeVersionStore $realtimeVersionStore,
     ): Response {
         $this->denyCrudForRegularUsers();
 
@@ -144,6 +159,7 @@ final class AppointmentController extends AbstractController
                 );
             }
 
+            $realtimeVersionStore->bump();
             $this->addFlash('success', 'Appointment confirmed.');
         }
 
@@ -151,7 +167,13 @@ final class AppointmentController extends AbstractController
     }
 
     #[Route('/{id}/reject', name: 'app_appointment_reject', methods: ['POST'])]
-    public function reject(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
+    public function reject(
+        Request $request,
+        Appointment $appointment,
+        EntityManagerInterface $entityManager,
+        ActivityLogger $logger,
+        AppointmentRealtimeVersionStore $realtimeVersionStore,
+    ): Response
     {
         $this->denyCrudForRegularUsers();
 
@@ -163,6 +185,7 @@ final class AppointmentController extends AbstractController
                 sprintf('Appointment #%d rejected', $appointment->getId()),
                 sprintf('Patient: %s', $appointment->getPatientName())
             );
+            $realtimeVersionStore->bump();
             $this->addFlash('success', 'Appointment request rejected.');
         }
 
@@ -170,7 +193,13 @@ final class AppointmentController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_appointment_delete', methods: ['POST'])]
-    public function delete(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, ActivityLogger $logger): Response
+    public function delete(
+        Request $request,
+        Appointment $appointment,
+        EntityManagerInterface $entityManager,
+        ActivityLogger $logger,
+        AppointmentRealtimeVersionStore $realtimeVersionStore,
+    ): Response
     {
         $this->denyCrudForRegularUsers();
 
@@ -181,6 +210,7 @@ final class AppointmentController extends AbstractController
             $entityManager->remove($appointment);
             $entityManager->flush();
             $logger->log('appointment_deleted', sprintf('Appointment #%d deleted', $appointmentId), $targetData);
+            $realtimeVersionStore->bump();
         }
 
         return $this->redirectToRoute('app_appointment_index', [], Response::HTTP_SEE_OTHER);

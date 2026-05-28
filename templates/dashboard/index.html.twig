@@ -287,4 +287,24 @@
             {% endif %}
         </div>
     </div>
+
+    <script>
+        (function () {
+            if (!window.EventSource) return;
+
+            let reloadQueued = false;
+            const source = new EventSource('{{ path('app_realtime_appointments_stream') }}');
+
+            const queueReload = () => {
+                if (reloadQueued) return;
+                reloadQueued = true;
+                setTimeout(() => window.location.reload(), 600);
+            };
+
+            source.addEventListener('appointment-update', queueReload);
+            source.onerror = () => {
+                // EventSource auto-reconnects; no manual action needed.
+            };
+        })();
+    </script>
 {% endblock %}

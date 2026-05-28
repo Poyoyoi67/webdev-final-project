@@ -8,6 +8,7 @@ use App\Repository\AppointmentRepository;
 use App\Repository\DoctorAvailabilityRepository;
 use App\Repository\DoctorRepository;
 use App\Repository\ServiceRepository;
+use App\Service\AppointmentRealtimeVersionStore;
 use App\Service\FcmNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -116,6 +117,7 @@ final class MobilePatientApiController extends AbstractController
         DoctorRepository $doctorRepository,
         DoctorAvailabilityRepository $availabilityRepository,
         FcmNotificationService $fcmNotificationService,
+        AppointmentRealtimeVersionStore $realtimeVersionStore,
     ): JsonResponse {
         $this->denyStaffArea();
 
@@ -161,6 +163,7 @@ final class MobilePatientApiController extends AbstractController
 
         $entityManager->persist($appointment);
         $entityManager->flush();
+        $realtimeVersionStore->bump();
 
         $user = $this->getUser();
         if ($user instanceof \App\Entity\User) {

@@ -10,6 +10,7 @@ use App\Repository\DoctorAvailabilityRepository;
 use App\Repository\DoctorRepository;
 use App\Repository\ServiceRepository;
 use App\Service\ActivityLogger;
+use App\Service\AppointmentRealtimeVersionStore;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,6 +29,7 @@ final class PatientBookingController extends AbstractController
         DoctorAvailabilityRepository $availabilityRepository,
         EntityManagerInterface $entityManager,
         ActivityLogger $logger,
+        AppointmentRealtimeVersionStore $realtimeVersionStore,
     ): Response {
         $this->denyPatientOnly();
 
@@ -62,6 +64,7 @@ final class PatientBookingController extends AbstractController
 
                 $entityManager->persist($appointment);
                 $entityManager->flush();
+                $realtimeVersionStore->bump();
 
                 $logger->log(
                     'appointment_requested',
