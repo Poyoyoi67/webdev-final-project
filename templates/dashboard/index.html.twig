@@ -212,6 +212,40 @@
             70% { box-shadow: 0 0 0 8px rgba(36, 184, 181, 0); }
             100% { box-shadow: none; }
         }
+
+        .live-sync-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 0.65rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #94a3b8;
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+        }
+        .live-sync-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #64748b;
+        }
+        .live-sync-badge--on {
+            color: #a5f0ee;
+            border-color: rgba(36, 184, 181, 0.55);
+        }
+        .live-sync-badge--on::before {
+            background: #24b8b5;
+            box-shadow: 0 0 0 3px rgba(36, 184, 181, 0.35);
+            animation: livePulse 1.6s ease-in-out infinite;
+        }
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.45; }
+        }
     </style>
 
     <div class="dash-wrap" id="staff-dashboard-live">
@@ -224,6 +258,7 @@
                     {% if 'ROLE_ADMIN' in roles %}Administrator{% elseif 'ROLE_STAFF' in roles %}Staff{% else %}Patient{% endif %}
                 </span>
             {% endif %}
+            <span id="live-sync-badge" class="live-sync-badge" hidden>Live — connecting…</span>
         </div>
 
         <div class="dash-stats">
@@ -299,12 +334,12 @@
         </div>
     </div>
 
-    <script src="/js/realtime-appointments.js"></script>
+    <script src="/js/realtime-appointments.js?v=2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             if (!window.HealthCareRealtime) return;
             HealthCareRealtime.initStaffDashboard(
-                '{{ path('app_realtime_appointments_stream') }}',
+                '{{ path('app_realtime_appointments_version') }}',
                 '{{ path('app_realtime_staff_dashboard') }}'
             );
         });

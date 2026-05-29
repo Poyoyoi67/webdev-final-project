@@ -31,10 +31,6 @@ services:
         arguments:
             $googleWebClientId: '%google_web_client_id%'
 
-    App\Service\AppointmentRealtimeVersionStore:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-
     App\Service\FcmNotificationService:
         arguments:
             $firebaseProjectId: '%firebase_project_id%'

@@ -94,12 +94,12 @@
         </div>
     </div>
 
-    <script src="/js/realtime-appointments.js"></script>
+    <script src="/js/realtime-appointments.js?v=2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             if (!window.HealthCareRealtime) return;
             HealthCareRealtime.initPatientBookings(
-                '{{ path('app_realtime_appointments_stream') }}',
+                '{{ path('app_realtime_appointments_version') }}',
                 '{{ path('app_realtime_my_bookings') }}'
             );
         });

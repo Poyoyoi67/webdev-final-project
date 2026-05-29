@@ -2,49 +2,68 @@
 
 namespace App\Service;
 
+use Doctrine\DBAL\Connection;
+
 /**
- * Lightweight version marker used by the SSE stream.
- * Any appointment mutation bumps the version so connected dashboards can refresh.
+ * Shared version counter in MySQL so all Railway requests see the same value.
+ * Any appointment mutation bumps the version; dashboards poll and refresh in place.
  */
 final class AppointmentRealtimeVersionStore
 {
-    private string $versionFile;
+    private const STATE_KEY = 'appointments_version';
 
-    public function __construct(string $projectDir)
-    {
-        $this->versionFile = $projectDir.'/var/appointment_realtime.version';
+    public function __construct(
+        private readonly Connection $connection,
+    ) {
     }
 
     public function getVersion(): int
     {
-        if (!is_file($this->versionFile)) {
-            $this->writeVersion(time());
-        }
+        $this->ensureRow();
 
-        $raw = @file_get_contents($this->versionFile);
-        if ($raw === false) {
+        $value = $this->connection->fetchOne(
+            'SELECT state_value FROM realtime_state WHERE state_key = ?',
+            [self::STATE_KEY],
+        );
+
+        if ($value === false || $value === null) {
             return time();
         }
 
-        return max(1, (int) trim($raw));
+        return max(1, (int) $value);
     }
 
     public function bump(): int
     {
         $version = time();
-        $this->writeVersion($version);
+        $this->ensureRow();
+
+        $this->connection->executeStatement(
+            'UPDATE realtime_state SET state_value = ? WHERE state_key = ?',
+            [(string) $version, self::STATE_KEY],
+        );
 
         return $version;
     }
 
-    private function writeVersion(int $version): void
+    private function ensureRow(): void
     {
-        $dir = \dirname($this->versionFile);
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0777, true);
+        $exists = $this->connection->fetchOne(
+            'SELECT 1 FROM realtime_state WHERE state_key = ?',
+            [self::STATE_KEY],
+        );
+
+        if ($exists !== false) {
+            return;
         }
 
-        @file_put_contents($this->versionFile, (string) $version, LOCK_EX);
+        try {
+            $this->connection->insert('realtime_state', [
+                'state_key' => self::STATE_KEY,
+                'state_value' => (string) time(),
+            ]);
+        } catch (\Throwable) {
+            // Another request may have inserted the row first.
+        }
     }
 }
-

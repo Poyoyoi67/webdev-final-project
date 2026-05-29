@@ -1,10 +1,10 @@
 /**
- * Live updates via SSE — patches the DOM without reloading the page.
+ * Live dashboard updates via lightweight polling (works on Railway + PHP built-in server).
  */
 (function (global) {
     'use strict';
 
-    const DEBOUNCE_MS = 400;
+    const POLL_MS = 3000;
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -25,40 +25,65 @@
         return fetch(url, {
             headers: { Accept: 'application/json' },
             credentials: 'same-origin',
+            cache: 'no-store',
         }).then((res) => {
             if (!res.ok) throw new Error('Failed to load live data');
             return res.json();
         });
     }
 
-    function connect(streamUrl, onUpdate) {
-        if (!global.EventSource || !streamUrl) return () => {};
+    function setLiveBadge(active) {
+        const badge = document.getElementById('live-sync-badge');
+        if (!badge) return;
+        badge.hidden = false;
+        badge.classList.toggle('live-sync-badge--on', active);
+        badge.textContent = active ? 'Live — updates automatically' : 'Live — reconnecting…';
+    }
 
-        let pending = false;
-        let timer = null;
+    /**
+     * Polls a tiny version endpoint; calls onChange when the version changes.
+     */
+    function startVersionPolling(versionUrl, onChange) {
+        if (!versionUrl) return () => {};
 
-        const schedule = () => {
-            if (pending) return;
-            pending = true;
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                pending = false;
-                onUpdate();
-            }, DEBOUNCE_MS);
+        let lastVersion = null;
+        let stopped = false;
+
+        const poll = () => {
+            if (stopped) return;
+
+            fetchJson(versionUrl)
+                .then((data) => {
+                    const version = data.version;
+                    if (version === undefined || version === null) return;
+
+                    setLiveBadge(true);
+
+                    if (lastVersion === null) {
+                        lastVersion = version;
+                        return;
+                    }
+
+                    if (version !== lastVersion) {
+                        lastVersion = version;
+                        onChange();
+                    }
+                })
+                .catch(() => setLiveBadge(false));
         };
 
-        const source = new global.EventSource(streamUrl);
-        source.addEventListener('appointment-update', schedule);
+        poll();
+        const timer = global.setInterval(poll, POLL_MS);
 
         return () => {
-            clearTimeout(timer);
-            source.close();
+            stopped = true;
+            global.clearInterval(timer);
         };
     }
 
-    function initStaffDashboard(streamUrl, dataUrl) {
+    function initStaffDashboard(versionUrl, dataUrl) {
         const root = document.getElementById('staff-dashboard-live');
-        if (!root || !dataUrl) return;
+        if (!root || !dataUrl || !versionUrl) return;
 
         const apply = (data) => {
             const stats = data.stats || {};
@@ -124,7 +149,7 @@
 
         const refresh = () => fetchJson(dataUrl).then(apply).catch(() => {});
 
-        connect(streamUrl, refresh);
+        startVersionPolling(versionUrl, refresh);
     }
 
     function statusColor(statusLower) {
@@ -134,9 +159,9 @@
         return '#065f46';
     }
 
-    function initStaffList(streamUrl, dataUrl, canManage) {
+    function initStaffList(versionUrl, dataUrl, canManage) {
         const table = document.getElementById('appointmentTable');
-        if (!table || !dataUrl) return;
+        if (!table || !dataUrl || !versionUrl) return;
 
         const dataTableOptions = {
             pageLength: 5,
@@ -150,10 +175,7 @@
         };
 
         const buildActions = (row) => {
-            let html =
-                '<a href="' +
-                escapeHtml(row.showUrl) +
-                '">View</a>';
+            let html = '<a href="' + escapeHtml(row.showUrl) + '">View</a>';
             if (!canManage) return html;
 
             html += ' | <a href="' + escapeHtml(row.editUrl) + '">Edit</a>';
@@ -234,12 +256,12 @@
 
         const refresh = () => fetchJson(dataUrl).then(apply).catch(() => {});
 
-        connect(streamUrl, refresh);
+        startVersionPolling(versionUrl, refresh);
     }
 
-    function initPatientBookings(streamUrl, dataUrl) {
+    function initPatientBookings(versionUrl, dataUrl) {
         const root = document.getElementById('my-bookings-live');
-        if (!root || !dataUrl) return;
+        if (!root || !dataUrl || !versionUrl) return;
 
         const apply = (data) => {
             const rows = data.appointments || [];
@@ -285,7 +307,7 @@
 
         const refresh = () => fetchJson(dataUrl).then(apply).catch(() => {});
 
-        connect(streamUrl, refresh);
+        startVersionPolling(versionUrl, refresh);
     }
 
     global.HealthCareRealtime = {

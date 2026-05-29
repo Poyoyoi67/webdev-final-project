@@ -262,7 +262,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>
 
-    <script src="/js/realtime-appointments.js"></script>
+    <script src="/js/realtime-appointments.js?v=2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const table = document.getElementById('appointmentTable');
@@ -284,7 +284,7 @@
 
             if (window.HealthCareRealtime) {
                 HealthCareRealtime.initStaffList(
-                    '{{ path('app_realtime_appointments_stream') }}',
+                    '{{ path('app_realtime_appointments_version') }}',
                     '{{ path('app_realtime_staff_list') }}',
                     {{ can_manage ? 'true' : 'false' }}
                 );

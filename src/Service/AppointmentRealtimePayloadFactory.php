@@ -19,6 +19,7 @@ final class AppointmentRealtimePayloadFactory
         private readonly DoctorRepository $doctorRepository,
         private readonly ServiceRepository $serviceRepository,
         private readonly AppointmentPaymentRepository $paymentRepository,
+        private readonly AppointmentRealtimeVersionStore $versionStore,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
     ) {
@@ -41,6 +42,7 @@ final class AppointmentRealtimePayloadFactory
             ->getResult();
 
         return [
+            'version' => $this->versionStore->getVersion(),
             'stats' => [
                 'appointments' => $this->appointmentRepository->countAll(),
                 'doctors' => $this->doctorRepository->count([]),
@@ -58,6 +60,7 @@ final class AppointmentRealtimePayloadFactory
         $appointments = $this->appointmentRepository->findAllOrderedForStaff();
 
         return [
+            'version' => $this->versionStore->getVersion(),
             'appointments' => array_map(
                 fn (Appointment $a) => $this->serializeStaffListRow($a, $canManage),
                 $appointments,
@@ -70,6 +73,7 @@ final class AppointmentRealtimePayloadFactory
         $appointments = $this->appointmentRepository->findByPatientIdentifier($patientIdentifier);
 
         return [
+            'version' => $this->versionStore->getVersion(),
             'appointments' => array_map(fn (Appointment $a) => $this->serializePatientBooking($a), $appointments),
         ];
     }
