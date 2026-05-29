@@ -26,7 +26,7 @@ fi
 echo "==> Installing Symfony bundle assets..."
 php bin/console assets:install public --no-interaction --env=prod
 
-# JWT keys (gitignored; created on first deploy)
+
 if [ ! -f config/jwt/private.pem ]; then
   if [ -z "$JWT_PASSPHRASE" ]; then
     echo "ERROR: JWT_PASSPHRASE is not set in Railway Variables."

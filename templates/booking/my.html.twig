@@ -51,6 +51,12 @@
             color: #0f766e;
         }
         .directions-hint a { color: var(--primary-blue); font-weight: 600; }
+        .live-updated { animation: liveFlash 0.9s ease; }
+        @keyframes liveFlash {
+            0% { box-shadow: 0 0 0 0 rgba(64, 224, 208, 0.5); }
+            70% { box-shadow: 0 0 0 8px rgba(64, 224, 208, 0); }
+            100% { box-shadow: none; }
+        }
     </style>
 
     <div class="my-wrap">
@@ -58,11 +64,12 @@
             <a href="{{ path('app_book_index') }}" class="btn-book">+ New booking</a>
         </div>
 
+        <div id="my-bookings-live">
         {% if appointments is empty %}
             <p class="empty">You have no booking requests yet.</p>
         {% else %}
             {% for appt in appointments %}
-                <article class="booking-card">
+                <article class="booking-card" data-appt-id="{{ appt.id }}">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
                         <h3>{{ appt.service ? appt.service.name : 'Service' }}</h3>
                         {% set s = appt.status|lower %}
@@ -84,5 +91,17 @@
                 </article>
             {% endfor %}
         {% endif %}
+        </div>
     </div>
+
+    <script src="/js/realtime-appointments.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!window.HealthCareRealtime) return;
+            HealthCareRealtime.initPatientBookings(
+                '{{ path('app_realtime_appointments_stream') }}',
+                '{{ path('app_realtime_my_bookings') }}'
+            );
+        });
+    </script>
 {% endblock %}

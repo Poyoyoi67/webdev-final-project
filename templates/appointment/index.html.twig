@@ -177,12 +177,34 @@
             color: var(--white) !important;
             border: none;
         }
+
+        .live-updated {
+            animation: liveFlash 0.9s ease;
+        }
+        @keyframes liveFlash {
+            0% { box-shadow: 0 0 0 0 rgba(64, 224, 208, 0.55); }
+            70% { box-shadow: 0 0 0 10px rgba(64, 224, 208, 0); }
+            100% { box-shadow: none; }
+        }
     </style>
 
     <h1 class="page-title">Appointment Records</h1>
 
     {% if appointments is empty %}
-        <p class="no-records">🚫 No appointments found.</p>
+        <p class="no-records" id="appointment-list-empty">🚫 No appointments found.</p>
+        <table id="appointmentTable" class="appointment-table display" style="display:none;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient Name</th>
+                    <th>Appointment Date</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     {% else %}
         <table id="appointmentTable" class="appointment-table display">
             <thead>
@@ -240,21 +262,33 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>
 
+    <script src="/js/realtime-appointments.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            $('#appointmentTable').DataTable({
-                pageLength: 5,
-                lengthMenu: [5, 10, 20, 50],
-                language: {
-                    search: "🔍 Search:",
-                    lengthMenu: "Show _MENU_ appointments per page",
-                    info: "Showing _START_ to _END_ of _TOTAL_ appointments",
-                    paginate: {
-                        next: "→",
-                        previous: "←"
+            const table = document.getElementById('appointmentTable');
+            if (table && table.querySelector('tbody tr')) {
+                $('#appointmentTable').DataTable({
+                    pageLength: 5,
+                    lengthMenu: [5, 10, 20, 50],
+                    language: {
+                        search: "🔍 Search:",
+                        lengthMenu: "Show _MENU_ appointments per page",
+                        info: "Showing _START_ to _END_ of _TOTAL_ appointments",
+                        paginate: {
+                            next: "→",
+                            previous: "←"
+                        }
                     }
-                }
-            });
+                });
+            }
+
+            if (window.HealthCareRealtime) {
+                HealthCareRealtime.initStaffList(
+                    '{{ path('app_realtime_appointments_stream') }}',
+                    '{{ path('app_realtime_staff_list') }}',
+                    {{ can_manage ? 'true' : 'false' }}
+                );
+            }
         });
     </script>
 {% endblock %}

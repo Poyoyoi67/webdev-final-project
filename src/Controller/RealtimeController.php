@@ -2,14 +2,46 @@
 
 namespace App\Controller;
 
+use App\Service\AppointmentRealtimePayloadFactory;
 use App\Service\AppointmentRealtimeVersionStore;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class RealtimeController extends AbstractController
 {
+    #[Route('/realtime/appointments/staff-dashboard', name: 'app_realtime_staff_dashboard', methods: ['GET'])]
+    public function staffDashboard(AppointmentRealtimePayloadFactory $payloadFactory): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_STAFF');
+
+        return $this->json($payloadFactory->staffDashboard());
+    }
+
+    #[Route('/realtime/appointments/staff-list', name: 'app_realtime_staff_list', methods: ['GET'])]
+    public function staffList(AppointmentRealtimePayloadFactory $payloadFactory): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_STAFF');
+        $canManage = $this->isGranted('ROLE_STAFF') || $this->isGranted('ROLE_ADMIN');
+
+        return $this->json($payloadFactory->staffList($canManage));
+    }
+
+    #[Route('/realtime/appointments/my-bookings', name: 'app_realtime_my_bookings', methods: ['GET'])]
+    public function myBookings(AppointmentRealtimePayloadFactory $payloadFactory): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        if ($this->isGranted('ROLE_STAFF') || $this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $patientId = $this->getUser()?->getUserIdentifier() ?? '';
+
+        return $this->json($payloadFactory->patientBookings($patientId));
+    }
+
     #[Route('/realtime/appointments/stream', name: 'app_realtime_appointments_stream', methods: ['GET'])]
     public function appointmentStream(AppointmentRealtimeVersionStore $versionStore): Response
     {

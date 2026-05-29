@@ -203,9 +203,18 @@
             color: #64748b;
             font-size: 0.92rem;
         }
+
+        .live-updated {
+            animation: liveFlash 0.9s ease;
+        }
+        @keyframes liveFlash {
+            0% { box-shadow: 0 0 0 0 rgba(36, 184, 181, 0.55); }
+            70% { box-shadow: 0 0 0 8px rgba(36, 184, 181, 0); }
+            100% { box-shadow: none; }
+        }
     </style>
 
-    <div class="dash-wrap">
+    <div class="dash-wrap" id="staff-dashboard-live">
         <div class="dash-hero">
             <h1>Welcome back{% if app.user %}<span style="font-weight:500;opacity:.9">, {{ app.user.userIdentifier }}</span>{% endif %}</h1>
             <p>Overview of appointments, capacity, and what is coming up next at the clinic.</p>
@@ -220,19 +229,19 @@
         <div class="dash-stats">
             <div class="stat-card">
                 <div class="label">Appointments</div>
-                <div class="value">{{ totalAppointments }}</div>
+                <div class="value" data-stat="appointments">{{ totalAppointments }}</div>
             </div>
             <div class="stat-card">
                 <div class="label">Doctors</div>
-                <div class="value">{{ totalDoctors }}</div>
+                <div class="value" data-stat="doctors">{{ totalDoctors }}</div>
             </div>
             <div class="stat-card">
                 <div class="label">Services</div>
-                <div class="value">{{ totalServices }}</div>
+                <div class="value" data-stat="services">{{ totalServices }}</div>
             </div>
             <div class="stat-card">
                 <div class="label">Payments</div>
-                <div class="value">{{ totalPayments }}</div>
+                <div class="value" data-stat="payments">{{ totalPayments }}</div>
             </div>
         </div>
 
@@ -240,9 +249,9 @@
             <div class="dash-panel-head">
                 <h2>Appointments by status</h2>
             </div>
-            <div class="status-mini-grid">
+            <div class="status-mini-grid" id="status-counts-grid">
                 {% for status in trackedStatuses %}
-                    <div class="status-pill">
+                    <div class="status-pill" data-status="{{ status }}">
                         <div class="name">{{ status }}</div>
                         <div class="num">{{ statusCounts[status]|default(0) }}</div>
                     </div>
@@ -254,6 +263,7 @@
             <div class="dash-panel-head">
                 <h2>Upcoming appointments</h2>
             </div>
+            <div id="upcoming-appointments-live">
             {% if upcoming is empty %}
                 <div class="empty-state">No upcoming appointments from today onward.</div>
             {% else %}
@@ -270,7 +280,7 @@
                         </thead>
                         <tbody>
                             {% for appt in upcoming %}
-                                <tr>
+                                <tr data-appt-id="{{ appt.id }}">
                                     <td>{{ appt.appointmentDate|date('M j, Y · g:i A') }}</td>
                                     <td>{{ appt.patientName }}</td>
                                     <td>{{ appt.doctor ? appt.doctor.name : '—' }}</td>
@@ -285,26 +295,18 @@
                     </table>
                 </div>
             {% endif %}
+            </div>
         </div>
     </div>
 
+    <script src="/js/realtime-appointments.js"></script>
     <script>
-        (function () {
-            if (!window.EventSource) return;
-
-            let reloadQueued = false;
-            const source = new EventSource('{{ path('app_realtime_appointments_stream') }}');
-
-            const queueReload = () => {
-                if (reloadQueued) return;
-                reloadQueued = true;
-                setTimeout(() => window.location.reload(), 600);
-            };
-
-            source.addEventListener('appointment-update', queueReload);
-            source.onerror = () => {
-                // EventSource auto-reconnects; no manual action needed.
-            };
-        })();
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!window.HealthCareRealtime) return;
+            HealthCareRealtime.initStaffDashboard(
+                '{{ path('app_realtime_appointments_stream') }}',
+                '{{ path('app_realtime_staff_dashboard') }}'
+            );
+        });
     </script>
 {% endblock %}
