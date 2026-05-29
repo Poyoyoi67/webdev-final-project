@@ -96,15 +96,26 @@ final class MobilePatientApiController extends AbstractController
         ]);
     }
 
-    #[Route('/appointments', name: 'api_mobile_patient_appointments_list', methods: ['GET'])]
-    public function appointments(AppointmentRepository $appointmentRepository): JsonResponse
+    #[Route('/appointments/version', name: 'api_mobile_patient_appointments_version', methods: ['GET'])]
+    public function appointmentsVersion(AppointmentRealtimeVersionStore $versionStore): JsonResponse
     {
+        $this->denyStaffArea();
+
+        return $this->json(['version' => $versionStore->getVersion()]);
+    }
+
+    #[Route('/appointments', name: 'api_mobile_patient_appointments_list', methods: ['GET'])]
+    public function appointments(
+        AppointmentRepository $appointmentRepository,
+        AppointmentRealtimeVersionStore $versionStore,
+    ): JsonResponse {
         $this->denyStaffArea();
         $patientId = $this->getUser()?->getUserIdentifier() ?? '';
 
         $items = $appointmentRepository->findByPatientIdentifier($patientId);
 
         return $this->json([
+            'version' => $versionStore->getVersion(),
             'appointments' => array_map($this->serializeAppointment(...), $items),
         ]);
     }
